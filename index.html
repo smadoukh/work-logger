@@ -1643,6 +1643,9 @@ function closeModal(e) {
 
 function logout() {
   if (confirm('هل تريد تسجيل الخروج؟')) {
+   localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
     toast('تم تسجيل الخروج');
   }
 }
