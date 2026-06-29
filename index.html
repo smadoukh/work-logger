@@ -6,598 +6,239 @@
 <title>سجل الأعمال اليومية — وزارة الاتصالات</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --primary: #1a56db;
-  --primary-hover: #1240a8;
-  --primary-light: #e8f0fe;
-  --success: #0f6e56;
-  --success-light: #e1f5ee;
-  --warning: #854f0b;
-  --warning-light: #faeeda;
-  --danger: #a32d2d;
-  --danger-light: #fcebeb;
-  --text: #111827;
-  --text-muted: #6b7280;
-  --border: rgba(0,0,0,0.09);
-  --border-strong: rgba(0,0,0,0.15);
-  --surface: #ddeeff;
-  --white: #ffffff;
-  --sidebar: #ffffff;
-  --sidebar-w: 230px;
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --primary: #1a56db; --primary-hover: #1240a8; --primary-light: #e8f0fe;
+  --success: #0f6e56; --success-light: #e1f5ee;
+  --warning: #854f0b; --warning-light: #faeeda;
+  --danger: #a32d2d; --danger-light: #fcebeb;
+  --text: #111827; --text-muted: #6b7280;
+  --border: rgba(0,0,0,0.09); --border-strong: rgba(0,0,0,0.15);
+  --surface: #ddeeff; --white: #ffffff;
+  --sidebar: #ffffff; --sidebar-w: 230px;
+  --radius: 10px; --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
 }
+body { font-family: 'Tajawal','Segoe UI',sans-serif; background: var(--surface); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-body {
-  font-family: 'Tajawal', 'Segoe UI', sans-serif;
-  background: var(--surface);
-  color: var(--text);
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
+/* LOGIN */
+#login-screen { display:none; position:fixed; inset:0; background:linear-gradient(135deg,#0f1729,#1a2d5a); z-index:9999; align-items:center; justify-content:center; flex-direction:column; }
+#login-screen.show { display:flex; }
+.login-box { background:#fff; border-radius:20px; padding:40px 36px; width:420px; max-width:95vw; box-shadow:0 24px 80px rgba(0,0,0,0.4); text-align:center; }
+.login-ministry { font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.08em; margin-bottom:20px; }
+.login-logo { width:64px; height:64px; background:var(--primary); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; box-shadow:0 8px 24px rgba(26,86,219,0.35); }
+.login-logo i { color:#fff; font-size:32px; }
+.login-title { font-size:20px; font-weight:800; margin-bottom:6px; }
+.login-sub { font-size:13px; color:var(--text-muted); margin-bottom:28px; line-height:1.5; }
+.btn-google { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:12px 20px; border:1.5px solid #dadce0; border-radius:8px; background:#fff; cursor:pointer; font-size:14px; font-weight:600; color:#3c4043; font-family:inherit; transition:all 0.15s; }
+.btn-google:hover { background:#f8f9ff; border-color:#4285f4; box-shadow:0 2px 8px rgba(66,133,244,0.2); }
+.btn-google img { width:20px; height:20px; }
+.login-note { font-size:11px; color:var(--text-muted); margin-top:18px; line-height:1.6; }
+.login-note strong { color:var(--primary); }
 
-/* ─── LOGIN SCREEN ─── */
-#login-screen {
-  display: none;
-  position: fixed; inset: 0;
-  background: linear-gradient(135deg, #0f1729 0%, #1a2d5a 100%);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-#login-screen.show { display: flex; }
+/* SIDEBAR */
+#sidebar { width:var(--sidebar-w); background:var(--sidebar); display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto; border-left:1px solid rgba(0,0,0,0.08); box-shadow:-2px 0 8px rgba(0,0,0,0.04); }
+.sidebar-logo { padding:18px 14px 14px; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:10px; }
+.logo-icon { width:38px; height:38px; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.logo-icon i { color:#fff; font-size:20px; }
+.logo-text { color:#111827 !important; font-size:13px; font-weight:700; line-height:1.3; }
+.logo-sub { color:#6b7280 !important; font-size:10px; }
+nav { flex:1; padding:10px 8px; }
+.nav-section { color:#6b7280 !important; font-size:10px; font-weight:700; padding:12px 8px 4px; letter-spacing:0.06em; text-transform:uppercase; }
+.nav-link { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; cursor:pointer; color:#111827 !important; text-decoration:none; font-size:13px; font-weight:500; margin-bottom:2px; transition:all 0.15s; user-select:none; }
+.nav-link:hover { background:#f0f4ff; color:#1a56db !important; }
+.nav-link.active { background:#e8f0fe; color:#1a56db !important; }
+.nav-link.active i { color:#1a56db !important; }
+.nav-link i { font-size:17px; color:#374151; }
+.nav-badge { margin-right:auto; background:#ef4444; color:#fff; font-size:10px; padding:1px 7px; border-radius:20px; font-weight:700; }
+.sidebar-user { padding:10px; border-top:1px solid rgba(0,0,0,0.08); }
+.user-card { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; background:#f0f4ff; }
+.user-avatar { width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+.user-avatar-letter { width:32px; height:32px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.user-name { color:#111827 !important; font-size:12px; font-weight:600; }
+.user-role { color:#6b7280 !important; font-size:10px; }
+.user-logout { margin-right:auto; color:#9ca3af; cursor:pointer; font-size:15px; }
+.user-logout:hover { color:#ef4444; }
 
-.login-box {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 40px 36px;
-  width: 420px;
-  max-width: 95vw;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-  text-align: center;
-}
-.login-ministry {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-.login-logo {
-  width: 64px; height: 64px;
-  background: var(--primary);
-  border-radius: 18px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 18px;
-  box-shadow: 0 8px 24px rgba(26,86,219,0.35);
-}
-.login-logo i { color: #fff; font-size: 32px; }
-.login-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
-.login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.5; }
+/* MAIN */
+#main { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+.topbar { background:#fff; border-bottom:0.5px solid var(--border); padding:13px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; flex-shrink:0; }
+.topbar-title { font-size:15px; font-weight:700; }
+.topbar-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+.page { display:none; padding:18px 22px; }
+.page.active { display:block; }
 
-.login-divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 24px 0;
-  color: var(--text-muted); font-size: 11px;
-}
-.login-divider::before, .login-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.stat-card { background:#fff; border-radius:12px; padding:14px 16px; border:0.5px solid var(--border); box-shadow:var(--shadow); }
+.stat-label { font-size:10px; color:var(--text-muted); font-weight:600; margin-bottom:6px; }
+.stat-value { font-size:28px; font-weight:800; }
+.stat-sub { font-size:10px; color:var(--text-muted); margin-top:5px; }
+.stat-sub.up { color:var(--success); } .stat-sub.warn { color:var(--warning); }
 
-/* حاوية زر Google */
-#g_id_signin {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
-}
+/* CARDS */
+.card { background:#fff; border-radius:12px; border:0.5px solid var(--border); box-shadow:var(--shadow); overflow:hidden; }
+.card-header { padding:12px 16px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:600; }
+.card-link { font-size:11px; color:var(--primary); cursor:pointer; font-weight:500; }
+.card-link:hover { text-decoration:underline; }
 
-.login-note {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 20px;
-  line-height: 1.6;
-}
-.login-note strong { color: var(--primary); }
+/* TABLE */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead tr { background:var(--surface); }
+th { padding:10px 14px; font-weight:600; color:var(--text-muted); font-size:11px; text-align:right; white-space:nowrap; }
+td { padding:11px 14px; border-top:0.5px solid var(--border); vertical-align:middle; }
+tr:hover td { background:#fafbff; }
 
-/* ─── SIDEBAR ─── */
-#sidebar {
-  width: var(--sidebar-w);
-  background: var(--sidebar);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow-y: auto;
-  border-left: 1px solid rgba(0,0,0,0.08);
-  box-shadow: -2px 0 8px rgba(0,0,0,0.04);
-}
-.sidebar-logo {
-  padding: 18px 14px 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.logo-icon {
-  width: 38px; height: 38px;
-  background: var(--primary);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.logo-icon i { color: #fff; font-size: 20px; }
-.logo-text { color: #111827; font-size: 13px; font-weight: 700; line-height: 1.3; }
-.logo-sub { color: #6b7280; font-size: 10px; font-weight: 400; }
+/* BADGES */
+.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+.badge-success { background:var(--success-light); color:var(--success); }
+.badge-warning { background:var(--warning-light); color:var(--warning); }
+.badge-danger  { background:var(--danger-light);  color:var(--danger); }
+.badge-primary { background:var(--primary-light); color:var(--primary); }
+.badge-gray    { background:#f1f0e8; color:#5f5e5a; }
 
-nav { flex: 1; padding: 10px 8px; }
-.nav-section {
-  color: #9ca3af;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 12px 8px 4px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #111827 !important;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 2px;
-  transition: all 0.15s;
-  user-select: none;
-}
-.nav-link:hover { background: #f0f4ff; color: #1a56db !important; }
-.nav-link.active { background: #e8f0fe; color: #1a56db !important; }
-.nav-link.active i { color: #1a56db !important; }
-.nav-link i { font-size: 17px; color: #374151; }
-.nav-section { color: #6b7280 !important; }
-.logo-text { color: #111827 !important; }
-.logo-sub { color: #6b7280 !important; }
-.user-name { color: #111827 !important; }
-.user-role { color: #6b7280 !important; }
-.nav-badge {
-  margin-right: auto;
-  background: #ef4444;
-  color: #fff;
-  font-size: 10px;
-  padding: 1px 7px;
-  border-radius: 20px;
-  font-weight: 700;
-}
+/* FORM */
+.form-group { margin-bottom:14px; }
+label.form-label { display:block; font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.03em; }
+input[type=text],input[type=date],input[type=number],input[type=email],input[type=password],select,textarea { width:100%; padding:9px 12px; border:0.5px solid var(--border-strong); border-radius:8px; font-family:inherit; font-size:13px; background:var(--surface); color:var(--text); outline:none; transition:border-color 0.15s,box-shadow 0.15s; }
+input:focus,select:focus,textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,86,219,0.1); background:#fff; }
+textarea { resize:vertical; min-height:80px; }
 
-.sidebar-user {
-  padding: 10px;
-  border-top: 1px solid rgba(0,0,0,0.08);
-}
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #f0f4ff;
-}
-.user-avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-.user-avatar-letter {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: var(--primary);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff;
-  flex-shrink: 0;
-}
-.user-name { color: #111827; font-size: 12px; font-weight: 600; }
-.user-role { color: #6b7280; font-size: 10px; }
-.user-logout { margin-right: auto; color: #9ca3af; cursor: pointer; font-size: 15px; }
-.user-logout:hover { color: #ef4444; }
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; white-space:nowrap; }
+.btn:active { transform:scale(0.98); }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-hover); }
+.btn-success { background:var(--success-light); color:var(--success); }
+.btn-success:hover { background:#c5e8dc; }
+.btn-danger  { background:var(--danger-light); color:var(--danger); }
+.btn-danger:hover { background:#f5c1c1; }
+.btn-ghost { background:var(--surface); color:var(--text); border:0.5px solid var(--border-strong); }
+.btn-ghost:hover { background:#eef0f5; }
+.btn-sm { padding:6px 12px; font-size:12px; }
 
-/* ─── MAIN ─── */
-#main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+/* GRID */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 
-.topbar {
-  background: var(--white);
-  border-bottom: 0.5px solid var(--border);
-  padding: 13px 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  flex-shrink: 0;
-}
-.topbar-title { font-size: 15px; font-weight: 700; }
-.topbar-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+/* REVIEW */
+.review-card { background:#fff; border-radius:12px; border:0.5px solid var(--warning-light); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
+.review-card.approved { border-color:#9fe1cb; background:#fbfffe; }
+.review-card.returned { border-color:#f09595; background:#fffbfb; }
 
-.page { display: none; padding: 18px 22px; }
-.page.active { display: block; }
+/* SETTINGS */
+.settings-info { background:var(--primary-light); border-radius:10px; padding:14px; display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+.settings-info i { color:var(--primary); font-size:22px; flex-shrink:0; margin-top:1px; }
+.settings-info-title { font-size:13px; font-weight:700; color:#1240a8; }
+.settings-info-sub { font-size:11px; color:var(--primary); margin-top:3px; line-height:1.6; }
+.col-tag { display:inline-block; background:#f0f4ff; color:var(--primary); font-size:10px; font-family:monospace; padding:2px 7px; border-radius:5px; margin:2px; }
+.conn-status { display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600; margin-bottom:14px; }
+.conn-status.connected { background:var(--success-light); color:var(--success); }
+.conn-status.disconnected { background:var(--danger-light); color:var(--danger); }
+.conn-dot { width:8px; height:8px; border-radius:50%; }
+.conn-status.connected .conn-dot { background:var(--success); }
+.conn-status.disconnected .conn-dot { background:var(--danger); }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.stat-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 14px 16px;
-  border: 0.5px solid var(--border);
-  box-shadow: var(--shadow);
-}
-.stat-label { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-.stat-value { font-size: 28px; font-weight: 800; }
-.stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
-.stat-sub.up { color: var(--success); }
-.stat-sub.warn { color: var(--warning); }
+/* PROGRESS */
+.progress-bar { background:#eef0f5; border-radius:4px; height:6px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:4px; transition:width 0.3s; }
 
-.card {
-  background: var(--white);
-  border-radius: 12px;
-  border: 0.5px solid var(--border);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.card-header {
-  padding: 12px 16px;
-  border-bottom: 0.5px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 13px;
-  font-weight: 600;
-}
-.card-link { font-size: 11px; color: var(--primary); cursor: pointer; font-weight: 500; }
-.card-link:hover { text-decoration: underline; }
+/* TOAST */
+#toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:#111827; color:#fff; padding:11px 20px; border-radius:10px; font-size:13px; display:none; align-items:center; gap:9px; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.25); white-space:nowrap; }
+#toast.show { display:flex; }
+#toast i { font-size:16px; color:#4ade80; }
 
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-thead tr { background: var(--surface); }
-th { padding: 10px 14px; font-weight: 600; color: var(--text-muted); font-size: 11px; text-align: right; white-space: nowrap; }
-td { padding: 11px 14px; border-top: 0.5px solid var(--border); vertical-align: middle; }
-tr:hover td { background: #fafbff; }
+/* MODAL */
+#modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+#modal-bg.show { display:flex; }
+#modal { background:#fff; border-radius:14px; width:480px; max-width:95vw; max-height:85vh; overflow-y:auto; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+.modal-title { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+.modal-close { cursor:pointer; color:var(--text-muted); font-size:20px; }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.badge-success { background: var(--success-light); color: var(--success); }
-.badge-warning { background: var(--warning-light); color: var(--warning); }
-.badge-danger  { background: var(--danger-light);  color: var(--danger);  }
-.badge-primary { background: var(--primary-light); color: var(--primary); }
-.badge-gray    { background: #f1f0e8; color: #5f5e5a; }
+/* LOADING */
+.loading-overlay { display:none; position:fixed; inset:0; background:rgba(255,255,255,0.8); z-index:200; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+.loading-overlay.show { display:flex; }
+.spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-.form-group { margin-bottom: 14px; }
-label.form-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-input[type=text], input[type=date], input[type=number],
-input[type=email], input[type=password], select, textarea {
-  width: 100%;
-  padding: 9px 12px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  background: var(--surface);
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
-  background: var(--white);
-}
-textarea { resize: vertical; min-height: 80px; }
+.empty-state { text-align:center; padding:40px; color:var(--text-muted); }
+.empty-state i { font-size:40px; opacity:0.3; }
+.empty-state p { font-size:13px; margin-top:10px; }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.btn:active { transform: scale(0.98); }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-success { background: var(--success-light); color: var(--success); }
-.btn-success:hover { background: #c5e8dc; }
-.btn-danger  { background: var(--danger-light);  color: var(--danger);  }
-.btn-danger:hover { background: #f5c1c1; }
-.btn-ghost { background: var(--surface); color: var(--text); border: 0.5px solid var(--border-strong); }
-.btn-ghost:hover { background: #eef0f5; }
-.btn-sm { padding: 6px 12px; font-size: 12px; }
-
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
-.review-card {
-  background: var(--white);
-  border-radius: 12px;
-  border: 0.5px solid var(--warning-light);
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: var(--shadow);
-}
-.review-card.approved { border-color: #9fe1cb; background: #fbfffe; }
-.review-card.returned { border-color: #f09595; background: #fffbfb; }
-
-.timeline { padding: 0 4px; }
-.timeline-item { display: flex; gap: 12px; margin-bottom: 14px; position: relative; }
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  right: 13px; top: 24px; bottom: -14px;
-  width: 1px; background: var(--border);
-}
-.timeline-item:last-child::before { display: none; }
-.timeline-dot {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-size: 13px;
-}
-.timeline-content { flex: 1; padding-top: 2px; }
-.timeline-title { font-size: 12px; font-weight: 600; }
-.timeline-time { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-
-.settings-info {
-  background: var(--primary-light);
-  border-radius: 10px;
-  padding: 14px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin-bottom: 14px;
-}
-.settings-info i { color: var(--primary); font-size: 22px; flex-shrink: 0; margin-top: 1px; }
-.settings-info-title { font-size: 13px; font-weight: 700; color: #1240a8; }
-.settings-info-sub { font-size: 11px; color: var(--primary); margin-top: 3px; line-height: 1.6; }
-
-.col-tag {
-  display: inline-block;
-  background: #f0f4ff; color: var(--primary);
-  font-size: 10px; font-family: monospace;
-  padding: 2px 7px; border-radius: 5px; margin: 2px;
-}
-.conn-status {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border-radius: 8px;
-  font-size: 12px; font-weight: 600; margin-bottom: 14px;
-}
-.conn-status.connected { background: var(--success-light); color: var(--success); }
-.conn-status.disconnected { background: var(--danger-light); color: var(--danger); }
-.conn-dot { width: 8px; height: 8px; border-radius: 50%; }
-.conn-status.connected .conn-dot { background: var(--success); }
-.conn-status.disconnected .conn-dot { background: var(--danger); }
-
-#toast {
-  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  background: #111827; color: #fff;
-  padding: 11px 20px; border-radius: 10px; font-size: 13px;
-  display: none; align-items: center; gap: 9px;
-  z-index: 9999; box-shadow: 0 4px 20px rgba(0,0,0,0.25); white-space: nowrap;
-}
-#toast.show { display: flex; }
-#toast i { font-size: 16px; color: #4ade80; }
-
-#modal-bg {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4); z-index: 100;
-  align-items: center; justify-content: center;
-}
-#modal-bg.show { display: flex; }
-#modal {
-  background: var(--white); border-radius: 14px;
-  width: 480px; max-width: 95vw; max-height: 85vh;
-  overflow-y: auto; padding: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-.modal-close { cursor: pointer; color: var(--text-muted); font-size: 20px; }
-.modal-close:hover { color: var(--text); }
-
-.progress-bar { background: #eef0f5; border-radius: 4px; height: 6px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
-
-.loading-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(255,255,255,0.8); z-index: 200;
-  align-items: center; justify-content: center;
-  flex-direction: column; gap: 12px;
-}
-.loading-overlay.show { display: flex; }
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--border); border-top-color: var(--primary);
-  border-radius: 50%; animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
-.empty-state i { font-size: 40px; opacity: 0.3; }
-.empty-state p { font-size: 13px; margin-top: 10px; }
-
-@media (max-width: 768px) {
-  #sidebar { width: 60px; }
-  .sidebar-logo .logo-text, .nav-link span, .sidebar-user .user-name,
-  .sidebar-user .user-role, .nav-section { display: none; }
-  .nav-link { justify-content: center; padding: 10px; }
-  .nav-badge { display: none; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+@media (max-width:768px) {
+  #sidebar { width:60px; }
+  .sidebar-logo .logo-text,.nav-link span,.sidebar-user .user-name,.sidebar-user .user-role,.nav-section { display:none; }
+  .nav-link { justify-content:center; padding:10px; }
+  .nav-badge { display:none; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .grid-2,.grid-3 { grid-template-columns:1fr; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-ministry">وزارة الاتصالات وتكنولوجيا المعلومات</div>
     <div class="login-logo"><i class="ti ti-briefcase"></i></div>
     <div class="login-title">سجل الأعمال اليومية</div>
-    <div class="login-sub">سجّل دخولك بحساب Google الخاص بك للمتابعة</div>
-
-    <!-- Google One Tap -->
-    <div id="g_id_onload"
-      data-client_id="91031951518-fe8tbp063sptc4hvqulsn3uats1kfp4l.apps.googleusercontent.com"
-      data-callback="handleGoogleLogin"
-      data-auto_prompt="false">
-    </div>
-
-    <!-- زر Google Sign-In -->
-    <div id="g_id_signin"
-      data-type="standard"
-      data-size="large"
-      data-theme="outline"
-      data-text="signin_with"
-      data-shape="rectangular"
-      data-logo_alignment="left"
-      data-width="320">
-    </div>
-
+    <div class="login-sub">سجّل دخولك بحساب Google للمتابعة والوصول لجدول البيانات</div>
+    <button class="btn-google" onclick="startGoogleLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      تسجيل الدخول بـ Google
+    </button>
     <div class="login-note">
-      يُسمح بالدخول لحسابات <strong>Gmail</strong> المعتمدة فقط.<br>
+      سيطلب التطبيق صلاحية الوصول لـ <strong>Google Sheets</strong> باسمك.<br>
       بياناتك محفوظة بشكل آمن ولا تُشارك مع أطراف خارجية.
     </div>
   </div>
 </div>
 
-<!-- ═══ SIDEBAR ═══ -->
+<!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon"><i class="ti ti-briefcase"></i></div>
-    <div>
-      <div class="logo-text">سجل الأعمال</div>
-      <div class="logo-sub">وزارة الاتصالات</div>
-    </div>
+    <div><div class="logo-text">سجل الأعمال</div><div class="logo-sub">وزارة الاتصالات</div></div>
   </div>
-
   <nav>
     <div class="nav-section">القائمة الرئيسية</div>
-    <a class="nav-link active" onclick="nav('dashboard')">
-      <i class="ti ti-layout-dashboard"></i><span>لوحة التحكم</span>
-    </a>
-    <a class="nav-link" onclick="nav('add')">
-      <i class="ti ti-circle-plus"></i><span>تسجيل عمل جديد</span>
-    </a>
-    <a class="nav-link" onclick="nav('logs')">
-      <i class="ti ti-clipboard-list"></i><span>سجلاتي</span>
-    </a>
-    <a class="nav-link" onclick="nav('review')">
-      <i class="ti ti-checkup-list"></i><span>المراجعة والاعتماد</span>
-      <span class="nav-badge" id="pending-badge" style="display:none">0</span>
-    </a>
-    <a class="nav-link" onclick="nav('reports')">
-      <i class="ti ti-chart-bar"></i><span>التقارير</span>
-    </a>
+    <a class="nav-link active" onclick="nav('dashboard')"><i class="ti ti-layout-dashboard"></i><span>لوحة التحكم</span></a>
+    <a class="nav-link" onclick="nav('add')"><i class="ti ti-circle-plus"></i><span>تسجيل عمل جديد</span></a>
+    <a class="nav-link" onclick="nav('logs')"><i class="ti ti-clipboard-list"></i><span>سجلاتي</span></a>
+    <a class="nav-link" onclick="nav('review')"><i class="ti ti-checkup-list"></i><span>المراجعة والاعتماد</span><span class="nav-badge" id="pending-badge" style="display:none">0</span></a>
+    <a class="nav-link" onclick="nav('reports')"><i class="ti ti-chart-bar"></i><span>التقارير</span></a>
     <div class="nav-section">الإدارة</div>
-    <a class="nav-link" onclick="nav('users')">
-      <i class="ti ti-users"></i><span>المستخدمون</span>
-    </a>
-    <a class="nav-link" onclick="nav('settings')">
-      <i class="ti ti-settings"></i><span>إعداد Google Sheets</span>
-    </a>
+    <a class="nav-link" onclick="nav('users')"><i class="ti ti-users"></i><span>المستخدمون</span></a>
+    <a class="nav-link" onclick="nav('settings')"><i class="ti ti-settings"></i><span>إعداد Google Sheets</span></a>
   </nav>
-
   <div class="sidebar-user">
     <div class="user-card">
-      <div id="user-avatar-wrap">
-        <div class="user-avatar-letter" id="user-avatar-letter">م</div>
-      </div>
-      <div>
-        <div class="user-name" id="display-user-name">المستخدم</div>
-        <div class="user-role" id="display-user-role">موظف</div>
-      </div>
+      <div id="user-avatar-wrap"><div class="user-avatar-letter" id="user-avatar-letter">م</div></div>
+      <div><div class="user-name" id="display-user-name">المستخدم</div><div class="user-role" id="display-user-role">موظف</div></div>
       <i class="ti ti-logout user-logout" title="تسجيل الخروج" onclick="logout()"></i>
     </div>
   </div>
 </div>
 
-<!-- ═══ MAIN ═══ -->
+<!-- MAIN -->
 <div id="main">
   <div class="topbar">
-    <div>
-      <div class="topbar-title" id="page-title">لوحة التحكم</div>
-      <div class="topbar-sub" id="page-date"></div>
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="nav('add')">
-      <i class="ti ti-plus"></i> تسجيل عمل
-    </button>
+    <div><div class="topbar-title" id="page-title">لوحة التحكم</div><div class="topbar-sub" id="page-date"></div></div>
+    <button class="btn btn-primary btn-sm" onclick="nav('add')"><i class="ti ti-plus"></i> تسجيل عمل</button>
   </div>
 
   <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">إجمالي الأعمال</div>
-        <div class="stat-value" style="color:var(--primary)" id="stat-total">0</div>
-        <div class="stat-sub up"><i class="ti ti-trending-up"></i> هذا الشهر</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">بانتظار الاعتماد</div>
-        <div class="stat-value" style="color:var(--warning)" id="stat-pending">0</div>
-        <div class="stat-sub warn"><i class="ti ti-clock"></i> في انتظار المدير</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">معتمدة</div>
-        <div class="stat-value" style="color:var(--success)" id="stat-approved">0</div>
-        <div class="stat-sub up"><i class="ti ti-check"></i> تم الاعتماد</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">مجموع الساعات</div>
-        <div class="stat-value" style="color:#7c3aed" id="stat-hours">0</div>
-        <div class="stat-sub"><i class="ti ti-clock"></i> هذا الشهر</div>
-      </div>
+      <div class="stat-card"><div class="stat-label">إجمالي الأعمال</div><div class="stat-value" style="color:var(--primary)" id="stat-total">0</div><div class="stat-sub up"><i class="ti ti-trending-up"></i> هذا الشهر</div></div>
+      <div class="stat-card"><div class="stat-label">بانتظار الاعتماد</div><div class="stat-value" style="color:var(--warning)" id="stat-pending">0</div><div class="stat-sub warn"><i class="ti ti-clock"></i> في انتظار المدير</div></div>
+      <div class="stat-card"><div class="stat-label">معتمدة</div><div class="stat-value" style="color:var(--success)" id="stat-approved">0</div><div class="stat-sub up"><i class="ti ti-check"></i> تم الاعتماد</div></div>
+      <div class="stat-card"><div class="stat-label">مجموع الساعات</div><div class="stat-value" style="color:#7c3aed" id="stat-hours">0</div><div class="stat-sub"><i class="ti ti-clock"></i> هذا الشهر</div></div>
     </div>
     <div class="grid-2">
-      <div class="card">
-        <div class="card-header">آخر الأعمال <span class="card-link" onclick="nav('logs')">عرض الكل</span></div>
-        <div id="dashboard-recent"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات بعد</p></div></div>
-      </div>
-      <div class="card">
-        <div class="card-header">التوزيع حسب نوع العمل</div>
-        <div id="dashboard-chart" style="padding:14px;"></div>
-      </div>
+      <div class="card"><div class="card-header">آخر الأعمال <span class="card-link" onclick="nav('logs')">عرض الكل</span></div><div id="dashboard-recent"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات بعد</p></div></div></div>
+      <div class="card"><div class="card-header">التوزيع حسب نوع العمل</div><div id="dashboard-chart" style="padding:14px;"></div></div>
     </div>
   </div>
 
@@ -607,45 +248,22 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="card" style="padding:20px;">
         <div class="grid-2 form-group">
           <div><label class="form-label">تاريخ العمل *</label><input type="date" id="f-date"></div>
-          <div>
-            <label class="form-label">نوع العمل *</label>
-            <select id="f-type">
-              <option value="">— اختر —</option>
-              <option>البنية التحتية</option><option>الشبكات</option><option>التخزين</option>
-              <option>التطوير البرمجي</option><option>الإدارة والتوثيق</option><option>الدعم الفني</option>
-              <option>الاجتماعات</option><option>الأمن السيبراني</option><option>المراقبة والرصد</option>
-              <option>أخرى</option>
-            </select>
+          <div><label class="form-label">نوع العمل *</label>
+            <select id="f-type"><option value="">— اختر —</option><option>البنية التحتية</option><option>الشبكات</option><option>التخزين</option><option>التطوير البرمجي</option><option>الإدارة والتوثيق</option><option>الدعم الفني</option><option>الاجتماعات</option><option>الأمن السيبراني</option><option>المراقبة والرصد</option><option>أخرى</option></select>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">عنوان العمل *</label>
-          <input type="text" id="f-title" placeholder="مثال: ترقية نواة Proxmox PVE على العقدة الثالثة">
-        </div>
-        <div class="form-group">
-          <label class="form-label">وصف العمل</label>
-          <textarea id="f-desc" rows="3" placeholder="اكتب تفاصيل العمل المنجز..."></textarea>
-        </div>
+        <div class="form-group"><label class="form-label">عنوان العمل *</label><input type="text" id="f-title" placeholder="مثال: ترقية نواة Proxmox PVE على العقدة الثالثة"></div>
+        <div class="form-group"><label class="form-label">وصف العمل</label><textarea id="f-desc" rows="3" placeholder="اكتب تفاصيل العمل المنجز..."></textarea></div>
         <div class="grid-3 form-group">
           <div><label class="form-label">مدة العمل (ساعات) *</label><input type="number" id="f-hours" value="1" min="0.5" max="16" step="0.5"></div>
           <div><label class="form-label">نسبة الإنجاز %</label><input type="number" id="f-progress" value="100" min="0" max="100"></div>
-          <div>
-            <label class="form-label">الأولوية</label>
-            <select id="f-priority"><option>عادية</option><option>متوسطة</option><option>عالية</option><option>عاجلة</option></select>
-          </div>
+          <div><label class="form-label">الأولوية</label><select id="f-priority"><option>عادية</option><option>متوسطة</option><option>عالية</option><option>عاجلة</option></select></div>
         </div>
         <div class="form-group"><label class="form-label">المشروع (اختياري)</label><input type="text" id="f-project" placeholder="مثال: مشروع البنية التحتية السحابية"></div>
         <div class="form-group"><label class="form-label">ملاحظات إضافية</label><input type="text" id="f-notes" placeholder="أي ملاحظات أخرى..."></div>
         <div style="display:flex;gap:10px;padding-top:6px;border-top:0.5px solid var(--border);">
           <button class="btn btn-ghost" onclick="submitLog('draft')"><i class="ti ti-device-floppy"></i> حفظ كمسودة</button>
           <button class="btn btn-primary" style="flex:1;" onclick="submitLog('pending')"><i class="ti ti-send"></i> حفظ وإرسال للاعتماد</button>
-        </div>
-      </div>
-      <div class="settings-info" style="margin-top:12px;">
-        <i class="ti ti-brand-google"></i>
-        <div>
-          <div class="settings-info-title">يُحفظ في Google Sheets تلقائياً</div>
-          <div class="settings-info-sub">كل سجل يُضاف مباشرة إلى جدول البيانات المشترك مع فريقك.</div>
         </div>
       </div>
     </div>
@@ -655,28 +273,18 @@ textarea { resize: vertical; min-height: 80px; }
   <div class="page" id="page-logs">
     <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
       <input type="month" id="filter-month" style="width:160px;">
-      <select id="filter-status" style="width:160px;">
-        <option value="">كل الحالات</option>
-        <option value="draft">مسودة</option>
-        <option value="pending">بانتظار الاعتماد</option>
-        <option value="approved">معتمد</option>
-        <option value="returned">أُعيد للتعديل</option>
-      </select>
+      <select id="filter-status" style="width:160px;"><option value="">كل الحالات</option><option value="draft">مسودة</option><option value="pending">بانتظار الاعتماد</option><option value="approved">معتمد</option><option value="returned">أُعيد للتعديل</option></select>
       <button class="btn btn-ghost btn-sm" onclick="loadLogs()"><i class="ti ti-search"></i> بحث</button>
       <button class="btn btn-success btn-sm" style="margin-right:auto;" onclick="exportExcel()"><i class="ti ti-file-spreadsheet"></i> تصدير Excel</button>
     </div>
     <div class="card">
-      <table>
-        <thead><tr><th>العنوان</th><th>النوع</th><th>التاريخ</th><th>الساعات</th><th>الإنجاز</th><th>الحالة</th><th></th></tr></thead>
-        <tbody id="logs-tbody"><tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات</p></div></td></tr></tbody>
-      </table>
+      <table><thead><tr><th>العنوان</th><th>النوع</th><th>التاريخ</th><th>الساعات</th><th>الإنجاز</th><th>الحالة</th><th></th></tr></thead>
+      <tbody id="logs-tbody"><tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات</p></div></td></tr></tbody></table>
     </div>
   </div>
 
   <!-- REVIEW -->
-  <div class="page" id="page-review">
-    <div id="review-list"><div class="empty-state" style="margin-top:30px;"><i class="ti ti-check-circle"></i><p>لا توجد أعمال بانتظار الاعتماد</p></div></div>
-  </div>
+  <div class="page" id="page-review"><div id="review-list"><div class="empty-state" style="margin-top:30px;"><i class="ti ti-check-circle"></i><p>لا توجد أعمال بانتظار الاعتماد</p></div></div></div>
 
   <!-- REPORTS -->
   <div class="page" id="page-reports">
@@ -685,17 +293,11 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="grid-3 form-group">
         <div><label class="form-label">من تاريخ</label><input type="date" id="r-from"></div>
         <div><label class="form-label">إلى تاريخ</label><input type="date" id="r-to"></div>
-        <div><label class="form-label">الموظف</label><input type="text" id="r-employee" placeholder="الاسم (أو اتركه فارغاً للكل)"></div>
+        <div><label class="form-label">الموظف</label><input type="text" id="r-employee" placeholder="الاسم أو اتركه فارغاً للكل"></div>
       </div>
       <div class="grid-3 form-group">
-        <div>
-          <label class="form-label">نوع العمل</label>
-          <select id="r-type"><option value="">الكل</option><option>البنية التحتية</option><option>الشبكات</option><option>التخزين</option><option>التطوير البرمجي</option><option>الإدارة والتوثيق</option><option>الدعم الفني</option></select>
-        </div>
-        <div>
-          <label class="form-label">الحالة</label>
-          <select id="r-status"><option value="">الكل</option><option value="approved">معتمد</option><option value="pending">بانتظار الاعتماد</option></select>
-        </div>
+        <div><label class="form-label">نوع العمل</label><select id="r-type"><option value="">الكل</option><option>البنية التحتية</option><option>الشبكات</option><option>التخزين</option><option>التطوير البرمجي</option><option>الإدارة والتوثيق</option><option>الدعم الفني</option></select></div>
+        <div><label class="form-label">الحالة</label><select id="r-status"><option value="">الكل</option><option value="approved">معتمد</option><option value="pending">بانتظار الاعتماد</option></select></div>
       </div>
       <div style="display:flex;gap:10px;">
         <button class="btn btn-primary" onclick="generateReport()"><i class="ti ti-search"></i> إنشاء التقرير</button>
@@ -712,45 +314,28 @@ textarea { resize: vertical; min-height: 80px; }
       <div style="font-size:13px;color:var(--text-muted);" id="users-count">إجمالي المستخدمين: 0</div>
       <button class="btn btn-primary btn-sm" onclick="openAddUserModal()"><i class="ti ti-user-plus"></i> إضافة مستخدم</button>
     </div>
-    <div class="card">
-      <table>
-        <thead><tr><th>المستخدم</th><th>البريد الإلكتروني</th><th>الدائرة</th><th>الصلاحية</th><th>الحالة</th><th></th></tr></thead>
-        <tbody id="users-tbody"><tr><td colspan="6"><div class="empty-state"><i class="ti ti-users"></i><p>لا توجد مستخدمون</p></div></td></tr></tbody>
-      </table>
-    </div>
+    <div class="card"><table><thead><tr><th>المستخدم</th><th>البريد الإلكتروني</th><th>الدائرة</th><th>الصلاحية</th><th>الحالة</th><th></th></tr></thead>
+    <tbody id="users-tbody"><tr><td colspan="6"><div class="empty-state"><i class="ti ti-users"></i><p>لا توجد مستخدمون</p></div></td></tr></tbody></table></div>
   </div>
 
   <!-- SETTINGS -->
   <div class="page" id="page-settings">
     <div style="max-width:580px;">
-      <div id="conn-status-bar" class="conn-status disconnected">
-        <div class="conn-dot"></div>
-        <span id="conn-status-text">غير متصل بـ Google Sheets</span>
-      </div>
+      <div id="conn-status-bar" class="conn-status disconnected"><div class="conn-dot"></div><span id="conn-status-text">غير متصل بـ Google Sheets</span></div>
       <div class="settings-info">
-        <i class="ti ti-brand-google"></i>
+        <i class="ti ti-info-circle"></i>
         <div>
-          <div class="settings-info-title">كيفية الربط مع Google Sheets</div>
-          <div class="settings-info-sub">
-            1. افتح <strong>Google Cloud Console</strong> وأنشئ مشروعاً جديداً.<br>
-            2. فعّل <strong>Google Sheets API</strong> و<strong>Google Drive API</strong>.<br>
-            3. أنشئ <strong>Service Account</strong> وحمّل ملف JSON.<br>
-            4. شارك جدول البيانات مع البريد الإلكتروني للـ Service Account.<br>
-            5. انسخ <strong>Spreadsheet ID</strong> من رابط الجدول.
-          </div>
+          <div class="settings-info-title">إعداد سريع</div>
+          <div class="settings-info-sub">أدخل Spreadsheet ID فقط — التطبيق يستخدم حساب Google الذي سجّلت دخولك به تلقائياً للكتابة في الجدول. لا حاجة لأي ملف credentials.</div>
         </div>
       </div>
       <div class="card" style="padding:18px;">
         <div class="form-group">
           <label class="form-label">Spreadsheet ID *</label>
-          <input type="text" id="s-sheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
+          <input type="text" id="s-sheet-id" placeholder="1rgY7JRqhpjg37VuPBh8Av1Br1mPQ_8yMSEq0r6FUiDg">
           <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">من رابط جدول البيانات: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</div>
         </div>
         <div class="form-group"><label class="form-label">اسم الورقة (Sheet Name)</label><input type="text" id="s-sheet-name" value="WorkLogs"></div>
-        <div class="form-group">
-          <label class="form-label">محتوى ملف credentials.json *</label>
-          <textarea id="s-credentials" rows="6" placeholder='{"type":"service_account","project_id":"...","private_key":"...","client_email":"...@....iam.gserviceaccount.com"}'></textarea>
-        </div>
         <div style="border-top:0.5px solid var(--border);padding-top:14px;margin-bottom:14px;">
           <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">بيانات المستخدم الحالي</div>
           <div class="grid-2">
@@ -759,10 +344,7 @@ textarea { resize: vertical; min-height: 80px; }
           </div>
           <div class="grid-2">
             <div><label class="form-label">البريد الإلكتروني</label><input type="email" id="s-email" placeholder="suhail@mtit.gov.ps"></div>
-            <div>
-              <label class="form-label">الصلاحية</label>
-              <select id="s-role"><option value="employee">موظف</option><option value="manager">مدير دائرة</option><option value="admin">مدير النظام</option></select>
-            </div>
+            <div><label class="form-label">الصلاحية</label><select id="s-role"><option value="employee">موظف</option><option value="manager">مدير دائرة</option><option value="admin">مدير النظام</option></select></div>
           </div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -773,14 +355,7 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
       <div style="margin-top:12px;background:var(--surface);border-radius:10px;padding:12px 14px;font-size:11px;">
         <div style="font-weight:600;color:var(--text);margin-bottom:6px;">هيكل الأعمدة المطلوب في Google Sheets:</div>
-        <div>
-          <span class="col-tag">ID</span><span class="col-tag">الموظف</span><span class="col-tag">الدائرة</span>
-          <span class="col-tag">التاريخ</span><span class="col-tag">العنوان</span><span class="col-tag">النوع</span>
-          <span class="col-tag">الوصف</span><span class="col-tag">الساعات</span><span class="col-tag">الإنجاز</span>
-          <span class="col-tag">الأولوية</span><span class="col-tag">المشروع</span><span class="col-tag">الحالة</span>
-          <span class="col-tag">تاريخ_الإرسال</span><span class="col-tag">تاريخ_الاعتماد</span>
-          <span class="col-tag">ملاحظات_المدير</span><span class="col-tag">ملاحظات</span>
-        </div>
+        <div><span class="col-tag">ID</span><span class="col-tag">الموظف</span><span class="col-tag">الدائرة</span><span class="col-tag">التاريخ</span><span class="col-tag">العنوان</span><span class="col-tag">النوع</span><span class="col-tag">الوصف</span><span class="col-tag">الساعات</span><span class="col-tag">الإنجاز</span><span class="col-tag">الأولوية</span><span class="col-tag">المشروع</span><span class="col-tag">الحالة</span><span class="col-tag">تاريخ_الإرسال</span><span class="col-tag">تاريخ_الاعتماد</span><span class="col-tag">ملاحظات_المدير</span><span class="col-tag">ملاحظات</span></div>
       </div>
     </div>
   </div>
@@ -788,41 +363,23 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- MODAL -->
 <div id="modal-bg" onclick="closeModal(event)">
-  <div id="modal">
-    <div class="modal-title">
-      <span id="modal-title-text"></span>
-      <span class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></span>
-    </div>
-    <div id="modal-body"></div>
-  </div>
+  <div id="modal"><div class="modal-title"><span id="modal-title-text"></span><span class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></span></div><div id="modal-body"></div></div>
 </div>
 
 <!-- LOADING -->
-<div class="loading-overlay" id="loading">
-  <div class="spinner"></div>
-  <div style="font-size:13px;color:var(--text-muted);" id="loading-msg">جارٍ التحميل...</div>
-</div>
+<div class="loading-overlay" id="loading"><div class="spinner"></div><div style="font-size:13px;color:var(--text-muted);" id="loading-msg">جارٍ التحميل...</div></div>
 
 <!-- TOAST -->
 <div id="toast"><i class="ti ti-check-circle"></i><span id="toast-msg"></span></div>
 
 <script>
-// ══════════════════════════════════════════
-// GOOGLE OAUTH CLIENT ID
-// ══════════════════════════════════════════
 const GOOGLE_CLIENT_ID = '91031951518-fe8tbp063sptc4hvqulsn3uats1kfp4l.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets openid profile email';
 
-// ══════════════════════════════════════════
-// CONFIG & STATE
-// ══════════════════════════════════════════
-let CFG = {
-  sheetId: '', sheetName: 'WorkLogs',
-  credentials: null, accessToken: null, tokenExpiry: 0,
-  username: '', dept: '', email: '', role: 'employee'
-};
+let CFG = { sheetId:'', sheetName:'WorkLogs', username:'', dept:'', email:'', role:'employee' };
 let LOGS = [];
-let currentPage = 'dashboard';
-let googleUser = null; // بيانات مستخدم Google
+let googleUser = null;
+let oauthToken = null;
 
 // ══════════════════════════════════════════
 // INIT
@@ -832,290 +389,215 @@ window.addEventListener('DOMContentLoaded', () => {
   setDateDefaults();
   updateDateDisplay();
 
-  // التحقق من الجلسة المحفوظة
-  const saved = sessionStorage.getItem('wl_google_user');
+  // تحقق من جلسة محفوظة
+  const saved = sessionStorage.getItem('wl_session');
   if (saved) {
     try {
-      googleUser = JSON.parse(saved);
-      applyGoogleUser(googleUser);
+      const s = JSON.parse(saved);
+      googleUser = s.user;
+      oauthToken = s.token;
+      applyUser();
       hideLoginScreen();
       loadDashboard();
-    } catch(e) {
-      showLoginScreen();
-    }
+    } catch(e) { showLoginScreen(); }
   } else {
     showLoginScreen();
   }
 });
 
 // ══════════════════════════════════════════
-// GOOGLE AUTH
+// GOOGLE OAuth — بدون Service Account
 // ══════════════════════════════════════════
-
-// callback من Google بعد تسجيل الدخول
-function handleGoogleLogin(response) {
-  try {
-    // فك تشفير JWT token من Google
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-
-    googleUser = {
-      name:    payload.name,
-      email:   payload.email,
-      picture: payload.picture,
-      sub:     payload.sub
-    };
-
-    // حفظ في sessionStorage (تنتهي بإغلاق المتصفح)
-    sessionStorage.setItem('wl_google_user', JSON.stringify(googleUser));
-
-    applyGoogleUser(googleUser);
-    hideLoginScreen();
-    loadDashboard();
-    toast('✓ مرحباً ' + googleUser.name.split(' ')[0]);
-
-  } catch(e) {
-    toast('❌ فشل تسجيل الدخول: ' + e.message, true);
-  }
+function startGoogleLogin() {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: window.location.origin + window.location.pathname,
+    response_type: 'token',
+    scope: SCOPES,
+    include_granted_scopes: 'true',
+    state: 'login'
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
-function applyGoogleUser(user) {
-  // تطبيق بيانات Google على الـ UI
-  if (!CFG.username) {
-    CFG.username = user.name;
-    CFG.email    = user.email;
+// استقبال الـ token بعد redirect
+function handleOAuthCallback() {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const token = params.get('access_token');
+  const state = params.get('state');
+  if (!token || state !== 'login') return false;
+
+  oauthToken = token;
+  // نظّف الـ URL
+  history.replaceState(null, '', window.location.pathname);
+  return true;
+}
+
+async function fetchUserInfo() {
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: 'Bearer ' + oauthToken }
+  });
+  const data = await res.json();
+  googleUser = { name: data.name, email: data.email, picture: data.picture };
+
+  // تطبيق وحفظ
+  if (!CFG.username) { CFG.username = data.name; CFG.email = data.email; }
+  sessionStorage.setItem('wl_session', JSON.stringify({ user: googleUser, token: oauthToken }));
+  applyUser();
+  hideLoginScreen();
+  loadDashboard();
+  toast('✓ مرحباً ' + googleUser.name.split(' ')[0]);
+}
+
+// تحقق عند تحميل الصفحة إذا كان هناك redirect
+window.addEventListener('load', () => {
+  if (window.location.hash.includes('access_token')) {
+    if (handleOAuthCallback()) {
+      showLoading('جارٍ تسجيل الدخول...');
+      fetchUserInfo().catch(e => {
+        hideLoading();
+        toast('❌ فشل تسجيل الدخول: ' + e.message, true);
+        showLoginScreen();
+      }).finally(() => hideLoading());
+    }
   }
+});
 
-  // اسم وصورة في الـ sidebar
-  document.getElementById('display-user-name').textContent = user.name;
-  document.getElementById('display-user-role').textContent = CFG.role === 'admin' ? 'مدير النظام' : CFG.role === 'manager' ? 'مدير دائرة' : 'موظف';
-
-  // صورة المستخدم من Google
+function applyUser() {
+  if (!googleUser) return;
+  if (!CFG.username) { CFG.username = googleUser.name; CFG.email = googleUser.email; }
+  document.getElementById('display-user-name').textContent = googleUser.name;
+  const roles = {employee:'موظف', manager:'مدير دائرة', admin:'مدير النظام'};
+  document.getElementById('display-user-role').textContent = roles[CFG.role] || 'موظف';
   const wrap = document.getElementById('user-avatar-wrap');
-  if (user.picture) {
-    wrap.innerHTML = `<img src="${user.picture}" class="user-avatar" alt="${esc(user.name)}" referrerpolicy="no-referrer">`;
-  } else {
-    wrap.innerHTML = `<div class="user-avatar-letter">${user.name.charAt(0)}</div>`;
-  }
-
-  // تحديث حقول الإعدادات
-  document.getElementById('s-username').value = CFG.username || user.name;
-  document.getElementById('s-email').value    = CFG.email    || user.email;
+  wrap.innerHTML = googleUser.picture
+    ? `<img src="${googleUser.picture}" class="user-avatar" referrerpolicy="no-referrer">`
+    : `<div class="user-avatar-letter">${googleUser.name.charAt(0)}</div>`;
+  document.getElementById('s-username').value = CFG.username || googleUser.name;
+  document.getElementById('s-email').value    = CFG.email    || googleUser.email;
 }
 
-function showLoginScreen() {
-  document.getElementById('login-screen').classList.add('show');
-}
-
-function hideLoginScreen() {
-  document.getElementById('login-screen').classList.remove('show');
-}
+function showLoginScreen() { document.getElementById('login-screen').classList.add('show'); }
+function hideLoginScreen() { document.getElementById('login-screen').classList.remove('show'); }
 
 function logout() {
   if (!confirm('هل تريد تسجيل الخروج؟')) return;
-
-  // إلغاء جلسة Google
-  if (typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.disableAutoSelect();
-  }
-
-  // مسح الجلسة
-  sessionStorage.removeItem('wl_google_user');
-  googleUser = null;
-  CFG.accessToken = null;
-
+  sessionStorage.removeItem('wl_session');
+  googleUser = null; oauthToken = null;
   toast('تم تسجيل الخروج');
-  setTimeout(() => {
-    showLoginScreen();
-    // إعادة تهيئة زر Google
-    if (typeof google !== 'undefined' && google.accounts) {
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback:  handleGoogleLogin
-      });
-      google.accounts.id.renderButton(
-        document.getElementById('g_id_signin'),
-        { theme: 'outline', size: 'large', width: 320, text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-      );
-    }
-  }, 800);
+  setTimeout(() => showLoginScreen(), 800);
 }
 
-// تهيئة Google بعد تحميل المكتبة
-window.onload = function() {
-  if (typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback:  handleGoogleLogin,
-      auto_select: false
-    });
-    google.accounts.id.renderButton(
-      document.getElementById('g_id_signin'),
-      { theme: 'outline', size: 'large', width: 320, text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-    );
-  }
-};
-
 // ══════════════════════════════════════════
-// NAVIGATION
+// GOOGLE SHEETS API — باستخدام OAuth token
 // ══════════════════════════════════════════
-const PAGE_TITLES = {
-  dashboard:'لوحة التحكم', add:'تسجيل عمل جديد', logs:'سجلاتي',
-  review:'المراجعة والاعتماد', reports:'التقارير',
-  users:'إدارة المستخدمين', settings:'إعداد Google Sheets'
-};
+async function sheetsGet(range) {
+  if (!oauthToken) throw new Error('يجب تسجيل الدخول أولاً');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName+'!'+range)}`;
+  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + oauthToken } });
+  if (res.status === 401) { sessionStorage.removeItem('wl_session'); showLoginScreen(); throw new Error('انتهت الجلسة — سجّل دخولك مجدداً'); }
+  if (!res.ok) throw new Error('Sheets API error: ' + res.status);
+  return res.json();
+}
 
-function nav(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  const links = document.querySelectorAll('.nav-link');
-  const map = {dashboard:0,add:1,logs:2,review:3,reports:4,users:5,settings:6};
-  if (links[map[page]]) links[map[page]].classList.add('active');
-  document.getElementById('page-title').textContent = PAGE_TITLES[page] || page;
-  document.querySelector('.topbar .btn').style.display = page === 'add' ? 'none' : '';
-  currentPage = page;
-  if (page === 'logs')      loadLogs();
-  if (page === 'review')    loadReview();
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'users')     loadUsers();
+async function sheetsAppend(values) {
+  if (!oauthToken) throw new Error('يجب تسجيل الدخول أولاً');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
+  const res = await fetch(url, { method:'POST', headers:{ Authorization:'Bearer '+oauthToken, 'Content-Type':'application/json' }, body:JSON.stringify({values}) });
+  if (res.status === 401) { sessionStorage.removeItem('wl_session'); showLoginScreen(); throw new Error('انتهت الجلسة — سجّل دخولك مجدداً'); }
+  if (!res.ok) throw new Error('Sheets append error: ' + res.status);
+  return res.json();
+}
+
+async function sheetsUpdate(range, values) {
+  if (!oauthToken) throw new Error('يجب تسجيل الدخول أولاً');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName+'!'+range)}?valueInputOption=RAW`;
+  const res = await fetch(url, { method:'PUT', headers:{ Authorization:'Bearer '+oauthToken, 'Content-Type':'application/json' }, body:JSON.stringify({values}) });
+  if (res.status === 401) { sessionStorage.removeItem('wl_session'); showLoginScreen(); throw new Error('انتهت الجلسة — سجّل دخولك مجدداً'); }
+  if (!res.ok) throw new Error('Sheets update error: ' + res.status);
+  return res.json();
+}
+
+async function setupSheet() {
+  if (!CFG.sheetId) { toast('❌ أدخل Spreadsheet ID أولاً', true); return; }
+  showLoading('جارٍ تهيئة الجدول...');
+  try {
+    await sheetsUpdate('A1:P1', [['ID','الموظف','الدائرة','التاريخ','العنوان','النوع','الوصف','الساعات','الإنجاز%','الأولوية','المشروع','الحالة','تاريخ_الإرسال','تاريخ_الاعتماد','ملاحظات_المدير','ملاحظات']]);
+    updateConnStatus(true); toast('✓ تم تهيئة الجدول بنجاح');
+  } catch(e) { toast('❌ ' + e.message, true); updateConnStatus(false); }
+  hideLoading();
+}
+
+async function testConnection() {
+  if (!CFG.sheetId) { toast('❌ أدخل Spreadsheet ID أولاً', true); return; }
+  showLoading('جارٍ اختبار الاتصال...');
+  try {
+    await sheetsGet('A1'); updateConnStatus(true); toast('✓ الاتصال يعمل بشكل صحيح');
+  } catch(e) { updateConnStatus(false); toast('❌ ' + e.message, true); }
+  hideLoading();
 }
 
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
 function saveSettings() {
-  try {
-    CFG.sheetId   = document.getElementById('s-sheet-id').value.trim();
-    CFG.sheetName = document.getElementById('s-sheet-name').value.trim() || 'WorkLogs';
-    CFG.username  = document.getElementById('s-username').value.trim();
-    CFG.dept      = document.getElementById('s-dept').value.trim();
-    CFG.email     = document.getElementById('s-email').value.trim();
-    CFG.role      = document.getElementById('s-role').value;
-    const credRaw = document.getElementById('s-credentials').value.trim();
-    if (credRaw) {
-      try { CFG.credentials = JSON.parse(credRaw); }
-      catch(e) { toast('❌ ملف credentials.json غير صالح', true); return; }
-    }
-    localStorage.setItem('wl_config', JSON.stringify({
-      sheetId: CFG.sheetId, sheetName: CFG.sheetName, credentials: CFG.credentials,
-      username: CFG.username, dept: CFG.dept, email: CFG.email, role: CFG.role
-    }));
-    if (googleUser) applyGoogleUser(googleUser);
-    toast('✓ تم حفظ الإعدادات بنجاح');
-  } catch(e) { toast('❌ خطأ في الحفظ: ' + e.message, true); }
+  CFG.sheetId   = document.getElementById('s-sheet-id').value.trim();
+  CFG.sheetName = document.getElementById('s-sheet-name').value.trim() || 'WorkLogs';
+  CFG.username  = document.getElementById('s-username').value.trim();
+  CFG.dept      = document.getElementById('s-dept').value.trim();
+  CFG.email     = document.getElementById('s-email').value.trim();
+  CFG.role      = document.getElementById('s-role').value;
+  localStorage.setItem('wl_config', JSON.stringify(CFG));
+  applyUser();
+  toast('✓ تم حفظ الإعدادات');
 }
 
 function loadConfig() {
   const saved = localStorage.getItem('wl_config');
   if (!saved) return;
   try {
-    const c = JSON.parse(saved);
-    Object.assign(CFG, c);
-    document.getElementById('s-sheet-id').value    = CFG.sheetId || '';
-    document.getElementById('s-sheet-name').value  = CFG.sheetName || 'WorkLogs';
-    document.getElementById('s-credentials').value = CFG.credentials ? JSON.stringify(CFG.credentials, null, 2) : '';
-    document.getElementById('s-username').value    = CFG.username || '';
-    document.getElementById('s-dept').value        = CFG.dept || '';
-    document.getElementById('s-email').value       = CFG.email || '';
-    document.getElementById('s-role').value        = CFG.role || 'employee';
-    if (CFG.sheetId && CFG.credentials) updateConnStatus(true);
+    Object.assign(CFG, JSON.parse(saved));
+    document.getElementById('s-sheet-id').value   = CFG.sheetId || '';
+    document.getElementById('s-sheet-name').value = CFG.sheetName || 'WorkLogs';
+    document.getElementById('s-username').value   = CFG.username || '';
+    document.getElementById('s-dept').value       = CFG.dept || '';
+    document.getElementById('s-email').value      = CFG.email || '';
+    document.getElementById('s-role').value       = CFG.role || 'employee';
+    if (CFG.sheetId) updateConnStatus(true);
   } catch(e) {}
 }
 
-function updateConnStatus(connected) {
-  const bar = document.getElementById('conn-status-bar');
-  const txt = document.getElementById('conn-status-text');
-  bar.className = 'conn-status ' + (connected ? 'connected' : 'disconnected');
-  txt.textContent = connected ? 'متصل بـ Google Sheets ✓' : 'غير متصل — أدخل بيانات الاتصال';
+function updateConnStatus(ok) {
+  document.getElementById('conn-status-bar').className = 'conn-status ' + (ok ? 'connected' : 'disconnected');
+  document.getElementById('conn-status-text').textContent = ok ? 'متصل بـ Google Sheets ✓' : 'غير متصل — أدخل Spreadsheet ID';
 }
 
 // ══════════════════════════════════════════
-// GOOGLE SHEETS API
+// NAVIGATION
 // ══════════════════════════════════════════
-async function getAccessToken() {
-  if (!CFG.credentials) throw new Error('لم يتم إعداد Google credentials');
-  if (CFG.accessToken && Date.now() < CFG.tokenExpiry - 60000) return CFG.accessToken;
-  const cred = CFG.credentials;
-  const now  = Math.floor(Date.now() / 1000);
-  const header  = btoa(JSON.stringify({alg:'RS256',typ:'JWT'}));
-  const payload = btoa(JSON.stringify({
-    iss: cred.client_email,
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600, iat: now
-  }));
-  const sigInput   = `${header}.${payload}`;
-  const privateKey = await importPrivateKey(cred.private_key);
-  const sig = await crypto.subtle.sign({name:'RSASSA-PKCS1-v1_5'}, privateKey, new TextEncoder().encode(sigInput));
-  const jwt = `${sigInput}.${btoa(String.fromCharCode(...new Uint8Array(sig)))}`;
-  const res  = await fetch('https://oauth2.googleapis.com/token', {
-    method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error('فشل الحصول على رمز الوصول');
-  CFG.accessToken = data.access_token;
-  CFG.tokenExpiry = Date.now() + (data.expires_in * 1000);
-  return CFG.accessToken;
-}
+const PAGE_TITLES = { dashboard:'لوحة التحكم', add:'تسجيل عمل جديد', logs:'سجلاتي', review:'المراجعة والاعتماد', reports:'التقارير', users:'إدارة المستخدمين', settings:'إعداد Google Sheets' };
 
-async function importPrivateKey(pem) {
-  const pemContents = pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g, '');
-  const binaryDer   = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-  return crypto.subtle.importKey('pkcs8', binaryDer.buffer, {name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}, false, ['sign']);
-}
-
-async function sheetsGet(range) {
-  const token = await getAccessToken();
-  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName+'!'+range)}`;
-  const res   = await fetch(url, {headers:{Authorization:`Bearer ${token}`}});
-  if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
-  return res.json();
-}
-
-async function sheetsAppend(values) {
-  const token = await getAccessToken();
-  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
-  const res   = await fetch(url, {method:'POST', headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({values})});
-  if (!res.ok) throw new Error(`Sheets append error: ${res.status}`);
-  return res.json();
-}
-
-async function sheetsUpdate(range, values) {
-  const token = await getAccessToken();
-  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName+'!'+range)}?valueInputOption=RAW`;
-  const res   = await fetch(url, {method:'PUT', headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({values})});
-  if (!res.ok) throw new Error(`Sheets update error: ${res.status}`);
-  return res.json();
-}
-
-async function setupSheet() {
-  if (!CFG.sheetId || !CFG.credentials) { toast('❌ أدخل بيانات الاتصال أولاً', true); return; }
-  showLoading('جارٍ تهيئة جدول البيانات...');
-  try {
-    await sheetsUpdate('A1:P1', [['ID','الموظف','الدائرة','التاريخ','العنوان','النوع','الوصف','الساعات','الإنجاز%','الأولوية','المشروع','الحالة','تاريخ_الإرسال','تاريخ_الاعتماد','ملاحظات_المدير','ملاحظات']]);
-    updateConnStatus(true);
-    toast('✓ تم تهيئة جدول البيانات');
-  } catch(e) { toast('❌ ' + e.message, true); updateConnStatus(false); }
-  hideLoading();
-}
-
-async function testConnection() {
-  if (!CFG.sheetId || !CFG.credentials) { toast('❌ أدخل بيانات الاتصال أولاً', true); return; }
-  showLoading('جارٍ اختبار الاتصال...');
-  try {
-    await sheetsGet('A1');
-    updateConnStatus(true);
-    toast('✓ الاتصال يعمل بشكل صحيح');
-  } catch(e) { updateConnStatus(false); toast('❌ فشل الاتصال: ' + e.message, true); }
-  hideLoading();
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const links = document.querySelectorAll('.nav-link');
+  const map = {dashboard:0,add:1,logs:2,review:3,reports:4,users:5,settings:6};
+  if (links[map[page]]) links[map[page]].classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[page] || page;
+  document.querySelector('.topbar .btn').style.display = page==='add' ? 'none' : '';
+  if (page==='logs') loadLogs();
+  if (page==='review') loadReview();
+  if (page==='dashboard') loadDashboard();
+  if (page==='users') loadUsers();
 }
 
 // ══════════════════════════════════════════
 // LOGS
 // ══════════════════════════════════════════
 async function fetchLogs() {
-  if (!CFG.sheetId || !CFG.credentials) return [];
+  if (!CFG.sheetId) return [];
   const data = await sheetsGet('A2:P1000');
   if (!data.values) return [];
   return data.values.map((r,i) => ({
@@ -1128,13 +610,13 @@ async function fetchLogs() {
 }
 
 async function submitLog(status) {
-  const title = document.getElementById('f-title').value.trim();
-  const date  = document.getElementById('f-date').value;
-  const type  = document.getElementById('f-type').value;
-  if (!title) { toast('❌ عنوان العمل مطلوب', true); return; }
-  if (!date)  { toast('❌ التاريخ مطلوب', true); return; }
-  if (!type)  { toast('❌ نوع العمل مطلوب', true); return; }
-  if (!CFG.sheetId || !CFG.credentials) { toast('❌ لم يتم إعداد Google Sheets — اذهب للإعدادات', true); return; }
+  const title=document.getElementById('f-title').value.trim();
+  const date=document.getElementById('f-date').value;
+  const type=document.getElementById('f-type').value;
+  if (!title) { toast('❌ عنوان العمل مطلوب',true); return; }
+  if (!date)  { toast('❌ التاريخ مطلوب',true); return; }
+  if (!type)  { toast('❌ نوع العمل مطلوب',true); return; }
+  if (!CFG.sheetId) { toast('❌ أدخل Spreadsheet ID في الإعدادات',true); return; }
   showLoading('جارٍ الحفظ...');
   try {
     const now = new Date().toISOString().replace('T',' ').slice(0,19);
@@ -1150,9 +632,8 @@ async function submitLog(status) {
       document.getElementById('f-notes').value.trim()
     ]]);
     toast(status==='pending' ? '✓ تم الإرسال للاعتماد' : '✓ تم حفظ المسودة');
-    clearForm();
-    setTimeout(() => nav('logs'), 1200);
-  } catch(e) { toast('❌ '+e.message, true); }
+    clearForm(); setTimeout(() => nav('logs'), 1200);
+  } catch(e) { toast('❌ '+e.message,true); }
   hideLoading();
 }
 
@@ -1165,21 +646,20 @@ function clearForm() {
 
 async function loadLogs() {
   showLoading('جارٍ تحميل السجلات...');
-  try { LOGS = await fetchLogs(); renderLogs(LOGS); }
-  catch(e) { toast('❌ '+e.message,true); renderLogs([]); }
+  try { LOGS=await fetchLogs(); renderLogs(LOGS); } catch(e) { toast('❌ '+e.message,true); renderLogs([]); }
   hideLoading();
 }
 
 function renderLogs(logs) {
-  const month  = document.getElementById('filter-month').value;
-  const sf     = document.getElementById('filter-status').value;
-  const filtered = logs.filter(l => {
-    const mine = !CFG.username || l.employee===CFG.username || CFG.role==='admin' || CFG.role==='manager';
-    return mine && (!month||l.date.startsWith(month)) && (!sf||l.status===sf);
+  const month=document.getElementById('filter-month').value;
+  const sf=document.getElementById('filter-status').value;
+  const filtered=logs.filter(l => {
+    const mine=!CFG.username||l.employee===CFG.username||CFG.role==='admin'||CFG.role==='manager';
+    return mine&&(!month||l.date.startsWith(month))&&(!sf||l.status===sf);
   });
-  const tbody = document.getElementById('logs-tbody');
-  if (!filtered.length) { tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات تطابق البحث</p></div></td></tr>'; return; }
-  tbody.innerHTML = filtered.sort((a,b)=>b.date.localeCompare(a.date)).map(l=>`
+  const tbody=document.getElementById('logs-tbody');
+  if (!filtered.length) { tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات</p></div></td></tr>'; return; }
+  tbody.innerHTML=filtered.sort((a,b)=>b.date.localeCompare(a.date)).map(l=>`
     <tr>
       <td><div style="font-weight:600;font-size:13px;">${esc(l.title)}</div>${l.project?`<div style="font-size:10px;color:var(--text-muted);">${esc(l.project)}</div>`:''}</td>
       <td style="color:var(--text-muted);font-size:12px;">${esc(l.type)}</td>
@@ -1195,29 +675,29 @@ function renderLogs(logs) {
 }
 
 async function loadDashboard() {
-  if (!CFG.sheetId || !CFG.credentials) return;
+  if (!CFG.sheetId) return;
   showLoading('جارٍ تحميل البيانات...');
   try {
-    LOGS = await fetchLogs();
-    const myLogs = CFG.role==='admin'||CFG.role==='manager' ? LOGS : LOGS.filter(l=>l.employee===CFG.username);
-    document.getElementById('stat-total').textContent    = myLogs.length;
-    document.getElementById('stat-pending').textContent  = myLogs.filter(l=>l.status==='pending').length;
-    document.getElementById('stat-approved').textContent = myLogs.filter(l=>l.status==='approved').length;
-    document.getElementById('stat-hours').textContent    = myLogs.reduce((s,l)=>s+l.hours,0).toFixed(1);
-    const pc = LOGS.filter(l=>l.status==='pending').length;
-    document.getElementById('pending-badge').textContent = pc;
-    document.getElementById('pending-badge').style.display = pc ? '' : 'none';
-    const recent = [...myLogs].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-    document.getElementById('dashboard-recent').innerHTML = recent.length
-      ? recent.map(l=>`<div style="padding:10px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div style="font-size:12px;font-weight:600;">${esc(l.title)}</div><div style="font-size:10px;color:var(--text-muted);">${l.type}·${l.hours}h·${l.date}</div></div>${statusBadge(l.status)}</div>`).join('')
-      : '<div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات بعد</p></div>';
+    LOGS=await fetchLogs();
+    const myLogs=CFG.role==='admin'||CFG.role==='manager'?LOGS:LOGS.filter(l=>l.employee===CFG.username);
+    document.getElementById('stat-total').textContent=myLogs.length;
+    document.getElementById('stat-pending').textContent=myLogs.filter(l=>l.status==='pending').length;
+    document.getElementById('stat-approved').textContent=myLogs.filter(l=>l.status==='approved').length;
+    document.getElementById('stat-hours').textContent=myLogs.reduce((s,l)=>s+l.hours,0).toFixed(1);
+    const pc=LOGS.filter(l=>l.status==='pending').length;
+    document.getElementById('pending-badge').textContent=pc;
+    document.getElementById('pending-badge').style.display=pc?'':'none';
+    const recent=[...myLogs].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+    document.getElementById('dashboard-recent').innerHTML=recent.length
+      ?recent.map(l=>`<div style="padding:10px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div style="font-size:12px;font-weight:600;">${esc(l.title)}</div><div style="font-size:10px;color:var(--text-muted);">${l.type}·${l.hours}h·${l.date}</div></div>${statusBadge(l.status)}</div>`).join('')
+      :'<div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات بعد</p></div>';
     const tc={};myLogs.forEach(l=>{tc[l.type]=(tc[l.type]||0)+1;});
     const sorted=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,5);
     const max=sorted[0]?.[1]||1;
     const colors=['#1a56db','#60a5fa','#0f6e56','#854f0b','#7c3aed'];
-    document.getElementById('dashboard-chart').innerHTML = sorted.length
-      ? sorted.map(([t,c],i)=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:11px;">${esc(t)}</span><span style="font-size:11px;color:var(--text-muted);">${c} عمل</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(c/max*100)}%;background:${colors[i]};"></div></div></div>`).join('')
-      : '<div class="empty-state"><i class="ti ti-chart-bar"></i><p>لا توجد بيانات</p></div>';
+    document.getElementById('dashboard-chart').innerHTML=sorted.length
+      ?sorted.map(([t,c],i)=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:11px;">${esc(t)}</span><span style="font-size:11px;color:var(--text-muted);">${c} عمل</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(c/max*100)}%;background:${colors[i]};"></div></div></div>`).join('')
+      :'<div class="empty-state"><i class="ti ti-chart-bar"></i><p>لا توجد بيانات</p></div>';
   } catch(e) { toast('❌ '+e.message,true); }
   hideLoading();
 }
@@ -1225,10 +705,10 @@ async function loadDashboard() {
 async function loadReview() {
   showLoading('جارٍ التحميل...');
   try {
-    LOGS = await fetchLogs();
-    const pending = LOGS.filter(l=>l.status==='pending');
-    const container = document.getElementById('review-list');
-    container.innerHTML = pending.length ? pending.map(l=>`
+    LOGS=await fetchLogs();
+    const pending=LOGS.filter(l=>l.status==='pending');
+    const container=document.getElementById('review-list');
+    container.innerHTML=pending.length?pending.map(l=>`
       <div class="review-card" id="rc-${l.rowIndex}">
         <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px;">
           <div><div style="font-size:14px;font-weight:700;">${esc(l.title)}</div>
@@ -1237,12 +717,12 @@ async function loadReview() {
         </div>
         ${l.desc?`<div style="font-size:12px;color:var(--text-muted);background:var(--surface);padding:9px 12px;border-radius:8px;margin-bottom:12px;line-height:1.6;">${esc(l.desc)}</div>`:''}
         <div id="rc-actions-${l.rowIndex}" style="display:flex;gap:8px;">
-          <textarea id="rc-note-${l.rowIndex}" placeholder="ملاحظات (اختياري للإعادة)" style="flex:1;min-height:40px;padding:7px 10px;font-size:12px;"></textarea>
+          <textarea id="rc-note-${l.rowIndex}" placeholder="ملاحظات الإعادة" style="flex:1;min-height:40px;padding:7px 10px;font-size:12px;"></textarea>
           <button class="btn btn-success" onclick="approveLog(${l.rowIndex})"><i class="ti ti-check"></i> اعتماد</button>
           <button class="btn btn-danger" onclick="returnLog(${l.rowIndex})"><i class="ti ti-arrow-back-up"></i> إعادة</button>
         </div>
       </div>`).join('')
-      : '<div class="empty-state" style="margin-top:30px;"><i class="ti ti-check-circle"></i><p>لا توجد أعمال بانتظار الاعتماد</p></div>';
+      :'<div class="empty-state" style="margin-top:30px;"><i class="ti ti-check-circle"></i><p>لا توجد أعمال بانتظار الاعتماد</p></div>';
   } catch(e) { toast('❌ '+e.message,true); }
   hideLoading();
 }
@@ -1250,7 +730,7 @@ async function loadReview() {
 async function approveLog(rowIdx) {
   showLoading('جارٍ الاعتماد...');
   try {
-    const now = new Date().toISOString().replace('T',' ').slice(0,19);
+    const now=new Date().toISOString().replace('T',' ').slice(0,19);
     await sheetsUpdate(`L${rowIdx}:N${rowIdx}`,[['approved',now,'']]);
     document.getElementById('rc-'+rowIdx).classList.add('approved');
     document.getElementById('rc-actions-'+rowIdx).innerHTML=`<span style="color:var(--success);font-weight:600;"><i class="ti ti-check-circle"></i> تم الاعتماد — ${now}</span>`;
@@ -1260,7 +740,7 @@ async function approveLog(rowIdx) {
 }
 
 async function returnLog(rowIdx) {
-  const note = document.getElementById('rc-note-'+rowIdx).value.trim();
+  const note=document.getElementById('rc-note-'+rowIdx).value.trim();
   if (!note) { toast('❌ أدخل ملاحظات الإعادة',true); return; }
   showLoading('جارٍ الإعادة...');
   try {
@@ -1273,23 +753,21 @@ async function returnLog(rowIdx) {
 }
 
 function viewLog(rowIdx) {
-  const l = LOGS.find(x=>x.rowIndex===rowIdx); if(!l) return;
-  openModal('تفاصيل السجل', `
-    <div style="display:grid;gap:10px;">
-      <div><strong>العنوان:</strong> ${esc(l.title)}</div>
-      <div><strong>النوع:</strong> ${esc(l.type)}</div>
-      <div><strong>التاريخ:</strong> ${l.date}</div>
-      <div><strong>الساعات:</strong> ${l.hours} · <strong>الإنجاز:</strong> ${l.progress}%</div>
-      <div><strong>الأولوية:</strong> ${esc(l.priority)}</div>
-      ${l.project?`<div><strong>المشروع:</strong> ${esc(l.project)}</div>`:''}
-      ${l.desc?`<div><strong>الوصف:</strong><br><div style="background:var(--surface);padding:9px;border-radius:8px;font-size:12px;margin-top:4px;line-height:1.7;">${esc(l.desc)}</div></div>`:''}
-      <div><strong>الحالة:</strong> ${statusBadge(l.status)}</div>
-      ${l.managerNote?`<div style="background:var(--warning-light);padding:10px;border-radius:8px;"><strong style="color:var(--warning);">ملاحظات المدير:</strong><br>${esc(l.managerNote)}</div>`:''}
-    </div>`);
+  const l=LOGS.find(x=>x.rowIndex===rowIdx); if(!l) return;
+  openModal('تفاصيل السجل',`<div style="display:grid;gap:10px;">
+    <div><strong>العنوان:</strong> ${esc(l.title)}</div>
+    <div><strong>النوع:</strong> ${esc(l.type)} · <strong>التاريخ:</strong> ${l.date}</div>
+    <div><strong>الساعات:</strong> ${l.hours} · <strong>الإنجاز:</strong> ${l.progress}%</div>
+    <div><strong>الأولوية:</strong> ${esc(l.priority)}</div>
+    ${l.project?`<div><strong>المشروع:</strong> ${esc(l.project)}</div>`:''}
+    ${l.desc?`<div><strong>الوصف:</strong><br><div style="background:var(--surface);padding:9px;border-radius:8px;font-size:12px;margin-top:4px;line-height:1.7;">${esc(l.desc)}</div></div>`:''}
+    <div><strong>الحالة:</strong> ${statusBadge(l.status)}</div>
+    ${l.managerNote?`<div style="background:var(--warning-light);padding:10px;border-radius:8px;"><strong style="color:var(--warning);">ملاحظات المدير:</strong><br>${esc(l.managerNote)}</div>`:''}
+  </div>`);
 }
 
 function editLog(rowIdx) {
-  const l = LOGS.find(x=>x.rowIndex===rowIdx); if(!l) return;
+  const l=LOGS.find(x=>x.rowIndex===rowIdx); if(!l) return;
   nav('add');
   setTimeout(()=>{
     document.getElementById('f-date').value=l.date; document.getElementById('f-type').value=l.type;
@@ -1297,7 +775,7 @@ function editLog(rowIdx) {
     document.getElementById('f-hours').value=l.hours; document.getElementById('f-progress').value=l.progress;
     document.getElementById('f-priority').value=l.priority; document.getElementById('f-project').value=l.project;
     document.getElementById('f-notes').value=l.notes;
-    toast('يمكنك الآن تعديل السجل وإعادة إرساله');
+    toast('يمكنك الآن تعديل السجل');
   },100);
 }
 
@@ -1317,10 +795,8 @@ async function generateReport() {
         <div class="stat-card"><div class="stat-label">معتمدة</div><div class="stat-value" style="color:var(--success);">${appr}</div></div>
         <div class="stat-card"><div class="stat-label">معدل الاعتماد</div><div class="stat-value" style="color:var(--warning);">${f.length?Math.round(appr/f.length*100):0}%</div></div>
       </div>
-      <div class="card"><table>
-        <thead><tr><th>الموظف</th><th>الدائرة</th><th>التاريخ</th><th>العنوان</th><th>النوع</th><th>الساعات</th><th>الحالة</th></tr></thead>
-        <tbody>${f.length?f.sort((a,b)=>b.date.localeCompare(a.date)).map(l=>`<tr><td style="font-weight:600;">${esc(l.employee)}</td><td style="font-size:12px;color:var(--text-muted);">${esc(l.dept)}</td><td style="font-size:12px;">${l.date}</td><td>${esc(l.title)}</td><td style="font-size:12px;">${esc(l.type)}</td><td style="font-weight:600;">${l.hours}</td><td>${statusBadge(l.status)}</td></tr>`).join(''):'<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد نتائج</p></div></td></tr>'}</tbody>
-      </table></div>`;
+      <div class="card"><table><thead><tr><th>الموظف</th><th>الدائرة</th><th>التاريخ</th><th>العنوان</th><th>النوع</th><th>الساعات</th><th>الحالة</th></tr></thead>
+      <tbody>${f.length?f.sort((a,b)=>b.date.localeCompare(a.date)).map(l=>`<tr><td style="font-weight:600;">${esc(l.employee)}</td><td style="font-size:12px;color:var(--text-muted);">${esc(l.dept)}</td><td style="font-size:12px;">${l.date}</td><td>${esc(l.title)}</td><td style="font-size:12px;">${esc(l.type)}</td><td style="font-weight:600;">${l.hours}</td><td>${statusBadge(l.status)}</td></tr>`).join(''):'<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد نتائج</p></div></td></tr>'}</tbody></table></div>`;
     LOGS=f;
   } catch(e) { toast('❌ '+e.message,true); }
   hideLoading();
@@ -1328,7 +804,7 @@ async function generateReport() {
 
 async function loadUsers() {
   const tbody=document.getElementById('users-tbody');
-  if(!CFG.sheetId||!CFG.credentials){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><i class="ti ti-settings"></i><p>أعدّ الاتصال بـ Google Sheets أولاً</p></div></td></tr>';return;}
+  if (!CFG.sheetId) { tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><i class="ti ti-settings"></i><p>أعدّ Spreadsheet ID أولاً</p></div></td></tr>'; return; }
   showLoading('جارٍ تحميل المستخدمين...');
   try {
     const data=await sheetsGet('R1:W200');
@@ -1337,8 +813,7 @@ async function loadUsers() {
     const roles={employee:'موظف',manager:'مدير دائرة',admin:'مدير النظام'};
     tbody.innerHTML=users.length?users.map(u=>`<tr>
       <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:30px;height:30px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);">${(u[0]||'?').charAt(0)}</div><div style="font-weight:600;">${esc(u[0])}</div></div></td>
-      <td style="font-size:12px;color:var(--text-muted);">${esc(u[1]||'')}</td>
-      <td style="font-size:12px;">${esc(u[2]||'')}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${esc(u[1]||'')}</td><td style="font-size:12px;">${esc(u[2]||'')}</td>
       <td><span class="badge badge-primary">${roles[u[3]]||u[3]||''}</span></td>
       <td><span class="badge ${u[4]==='inactive'?'badge-danger':'badge-success'}">${u[4]==='inactive'?'معطل':'نشط'}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="toast('قيد التطوير')"><i class="ti ti-edit"></i></button></td>
@@ -1349,20 +824,14 @@ async function loadUsers() {
 
 function openAddUserModal() {
   openModal('إضافة مستخدم جديد',`
-    <div class="grid-2 form-group">
-      <div><label class="form-label">الاسم *</label><input type="text" id="nu-name" placeholder="الاسم الكامل"></div>
-      <div><label class="form-label">البريد الإلكتروني</label><input type="email" id="nu-email" placeholder="user@mtit.gov.ps"></div>
-    </div>
-    <div class="grid-2 form-group">
-      <div><label class="form-label">الدائرة</label><input type="text" id="nu-dept" placeholder="البنية التحتية"></div>
-      <div><label class="form-label">الصلاحية</label><select id="nu-role"><option value="employee">موظف</option><option value="manager">مدير دائرة</option><option value="admin">مدير النظام</option></select></div>
-    </div>
+    <div class="grid-2 form-group"><div><label class="form-label">الاسم *</label><input type="text" id="nu-name" placeholder="الاسم الكامل"></div><div><label class="form-label">البريد الإلكتروني</label><input type="email" id="nu-email" placeholder="user@mtit.gov.ps"></div></div>
+    <div class="grid-2 form-group"><div><label class="form-label">الدائرة</label><input type="text" id="nu-dept" placeholder="البنية التحتية"></div><div><label class="form-label">الصلاحية</label><select id="nu-role"><option value="employee">موظف</option><option value="manager">مدير دائرة</option><option value="admin">مدير النظام</option></select></div></div>
     <button class="btn btn-primary" onclick="addUser()" style="width:100%;"><i class="ti ti-user-plus"></i> إضافة</button>`);
 }
 
 async function addUser() {
   const name=document.getElementById('nu-name').value.trim();
-  if(!name){toast('❌ الاسم مطلوب',true);return;}
+  if (!name) { toast('❌ الاسم مطلوب',true); return; }
   showLoading('جارٍ الإضافة...');
   try {
     await sheetsAppend([[name,document.getElementById('nu-email').value.trim(),document.getElementById('nu-dept').value.trim(),document.getElementById('nu-role').value,'active',new Date().toISOString().split('T')[0]]]);
@@ -1390,32 +859,26 @@ function setDateDefaults() {
   document.getElementById('r-from').value=ym+'-01';
   document.getElementById('r-to').value=today;
 }
-
 function updateDateDisplay() {
   const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
   const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const d=new Date();
   document.getElementById('page-date').textContent=`${days[d.getDay()]}، ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
-
 function statusBadge(s) {
   const map={draft:['badge-gray','مسودة','ti-pencil'],pending:['badge-warning','بانتظار الاعتماد','ti-clock'],approved:['badge-success','معتمد','ti-check'],returned:['badge-danger','أُعيد للتعديل','ti-arrow-back-up']};
   const [cls,label,icon]=map[s]||['badge-gray',s,'ti-circle'];
   return `<span class="badge ${cls}"><i class="ti ${icon}" style="font-size:11px;"></i> ${label}</span>`;
 }
-
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function toast(msg,isError) {
-  const el=document.getElementById('toast'), icon=el.querySelector('i');
+function toast(msg,isError){
+  const el=document.getElementById('toast'),icon=el.querySelector('i');
   icon.className=isError?'ti ti-alert-circle':'ti ti-check-circle';
   icon.style.color=isError?'#f87171':'#4ade80';
   document.getElementById('toast-msg').textContent=msg;
-  el.classList.add('show');
-  clearTimeout(window._tt);
+  el.classList.add('show'); clearTimeout(window._tt);
   window._tt=setTimeout(()=>el.classList.remove('show'),3500);
 }
-
 function showLoading(msg){document.getElementById('loading').classList.add('show');document.getElementById('loading-msg').textContent=msg||'جارٍ التحميل...';}
 function hideLoading(){document.getElementById('loading').classList.remove('show');}
 function openModal(title,body){document.getElementById('modal-title-text').textContent=title;document.getElementById('modal-body').innerHTML=body;document.getElementById('modal-bg').classList.add('show');}
