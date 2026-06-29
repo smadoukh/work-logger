@@ -40,6 +40,38 @@ body {
   overflow: hidden;
 }
 
+/* ─── LOGIN SCREEN ─── */
+#login-screen {
+  display: none;
+  position: fixed; inset: 0;
+  background: var(--surface);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+#login-screen.show { display: flex; }
+.login-box {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px 28px;
+  width: 400px;
+  max-width: 95vw;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  border: 0.5px solid var(--border);
+}
+.login-logo {
+  width: 56px; height: 56px;
+  background: var(--primary);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.login-logo i { color: #fff; font-size: 28px; }
+.login-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+.login-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 24px; text-align: center; }
+.login-divider { height: 0.5px; background: var(--border); margin: 20px 0; }
+.login-note { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.6; }
+
 /* ─── SIDEBAR ─── */
 #sidebar {
   width: var(--sidebar-w);
@@ -443,6 +475,43 @@ textarea { resize: vertical; min-height: 80px; }
 </head>
 <body>
 
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><i class="ti ti-briefcase"></i></div>
+    <div class="login-title">سجل الأعمال اليومية</div>
+    <div class="login-sub">وزارة الاتصالات وتكنولوجيا المعلومات</div>
+
+    <div class="form-group">
+      <label class="form-label">الاسم الكامل *</label>
+      <input type="text" id="login-name" placeholder="أدخل اسمك الكامل"
+        onkeydown="if(event.key==='Enter') loginLocal()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">الدائرة</label>
+      <input type="text" id="login-dept" placeholder="مثال: البنية التحتية"
+        onkeydown="if(event.key==='Enter') loginLocal()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">الصلاحية</label>
+      <select id="login-role">
+        <option value="employee">موظف</option>
+        <option value="manager">مدير دائرة</option>
+        <option value="admin">مدير النظام</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:4px;" onclick="loginLocal()">
+      <i class="ti ti-login"></i> دخول
+    </button>
+
+    <div class="login-divider"></div>
+    <div class="login-note">
+      بعد الدخول، توجّه لإعدادات Google Sheets لربط حسابك بجدول البيانات.
+    </div>
+  </div>
+</div>
+
 <!-- ═══ SIDEBAR ═══ -->
 <div id="sidebar">
   <div class="sidebar-logo">
@@ -483,10 +552,10 @@ textarea { resize: vertical; min-height: 80px; }
 
   <div class="sidebar-user">
     <div class="user-card">
-      <div class="user-avatar" id="user-avatar-letter">س</div>
+      <div class="user-avatar" id="user-avatar-letter">م</div>
       <div>
-        <div class="user-name" id="display-user-name">سهيل</div>
-        <div class="user-role" id="display-user-role">مدير النظام</div>
+        <div class="user-name" id="display-user-name">المستخدم</div>
+        <div class="user-role" id="display-user-role">موظف</div>
       </div>
       <i class="ti ti-logout user-logout" title="تسجيل الخروج" onclick="logout()"></i>
     </div>
@@ -894,7 +963,9 @@ window.addEventListener('DOMContentLoaded', () => {
   loadConfig();
   setDateDefaults();
   updateDateDisplay();
-  loadDashboard();
+  if (checkSession()) {
+    loadDashboard();
+  }
 });
 
 function setDateDefaults() {
@@ -902,7 +973,6 @@ function setDateDefaults() {
   const ym = today.slice(0,7);
   document.getElementById('f-date').value = today;
   document.getElementById('filter-month').value = ym;
-
   const firstDay = ym + '-01';
   document.getElementById('r-from').value = firstDay;
   document.getElementById('r-to').value = today;
@@ -913,6 +983,82 @@ function updateDateDisplay() {
   const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const d = new Date();
   document.getElementById('page-date').textContent = `${days[d.getDay()]}، ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ══════════════════════════════════════════
+// SESSION / AUTH
+// ══════════════════════════════════════════
+function checkSession() {
+  const saved = localStorage.getItem('wl_session');
+  if (!saved) { showLoginScreen(); return false; }
+  try {
+    const session = JSON.parse(saved);
+    // الجلسة تنتهي بعد 8 ساعات
+    if (Date.now() - session.loginAt > 8 * 60 * 60 * 1000) {
+      localStorage.removeItem('wl_session');
+      showLoginScreen();
+      return false;
+    }
+    // تطبيق بيانات الجلسة على CFG إذا لم يكن هناك config محفوظ
+    if (!CFG.username && session.name) {
+      CFG.username = session.name;
+      CFG.dept     = session.dept || '';
+      CFG.role     = session.role || 'employee';
+      updateUserDisplay();
+    }
+    return true;
+  } catch(e) {
+    showLoginScreen();
+    return false;
+  }
+}
+
+function loginLocal() {
+  const name = document.getElementById('login-name').value.trim();
+  const dept = document.getElementById('login-dept').value.trim();
+  const role = document.getElementById('login-role').value;
+
+  if (!name) {
+    document.getElementById('login-name').style.borderColor = 'var(--danger)';
+    document.getElementById('login-name').focus();
+    return;
+  }
+  document.getElementById('login-name').style.borderColor = '';
+
+  const session = { name, dept, role, loginAt: Date.now() };
+  localStorage.setItem('wl_session', JSON.stringify(session));
+
+  // تحديث CFG إذا لم يكن محفوظاً مسبقاً
+  if (!CFG.username) {
+    CFG.username = name;
+    CFG.dept     = dept;
+    CFG.role     = role;
+    updateUserDisplay();
+  }
+
+  hideLoginScreen();
+  loadDashboard();
+}
+
+function showLoginScreen() {
+  document.getElementById('login-screen').classList.add('show');
+}
+
+function hideLoginScreen() {
+  document.getElementById('login-screen').classList.remove('show');
+}
+
+function logout() {
+  if (confirm('هل تريد تسجيل الخروج؟')) {
+    localStorage.removeItem('wl_session');
+    // إعادة تعيين CFG
+    CFG.username = '';
+    CFG.dept     = '';
+    CFG.role     = 'employee';
+    CFG.accessToken = null;
+    toast('تم تسجيل الخروج بنجاح');
+    setTimeout(() => showLoginScreen(), 800);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -955,12 +1101,12 @@ function nav(page) {
 // ══════════════════════════════════════════
 function saveSettings() {
   try {
-    CFG.sheetId = document.getElementById('s-sheet-id').value.trim();
+    CFG.sheetId   = document.getElementById('s-sheet-id').value.trim();
     CFG.sheetName = document.getElementById('s-sheet-name').value.trim() || 'WorkLogs';
-    CFG.username = document.getElementById('s-username').value.trim();
-    CFG.dept = document.getElementById('s-dept').value.trim();
-    CFG.email = document.getElementById('s-email').value.trim();
-    CFG.role = document.getElementById('s-role').value;
+    CFG.username  = document.getElementById('s-username').value.trim();
+    CFG.dept      = document.getElementById('s-dept').value.trim();
+    CFG.email     = document.getElementById('s-email').value.trim();
+    CFG.role      = document.getElementById('s-role').value;
 
     const credRaw = document.getElementById('s-credentials').value.trim();
     if (credRaw) {
@@ -978,6 +1124,10 @@ function saveSettings() {
       role: CFG.role
     }));
 
+    // تحديث بيانات الجلسة أيضاً
+    const session = { name: CFG.username, dept: CFG.dept, role: CFG.role, loginAt: Date.now() };
+    localStorage.setItem('wl_session', JSON.stringify(session));
+
     updateUserDisplay();
     toast('✓ تم حفظ الإعدادات بنجاح');
   } catch(e) { toast('❌ خطأ في الحفظ: ' + e.message, true); }
@@ -989,13 +1139,13 @@ function loadConfig() {
   try {
     const c = JSON.parse(saved);
     Object.assign(CFG, c);
-    document.getElementById('s-sheet-id').value = CFG.sheetId || '';
-    document.getElementById('s-sheet-name').value = CFG.sheetName || 'WorkLogs';
+    document.getElementById('s-sheet-id').value    = CFG.sheetId || '';
+    document.getElementById('s-sheet-name').value  = CFG.sheetName || 'WorkLogs';
     document.getElementById('s-credentials').value = CFG.credentials ? JSON.stringify(CFG.credentials, null, 2) : '';
-    document.getElementById('s-username').value = CFG.username || '';
-    document.getElementById('s-dept').value = CFG.dept || '';
-    document.getElementById('s-email').value = CFG.email || '';
-    document.getElementById('s-role').value = CFG.role || 'employee';
+    document.getElementById('s-username').value    = CFG.username || '';
+    document.getElementById('s-dept').value        = CFG.dept || '';
+    document.getElementById('s-email').value       = CFG.email || '';
+    document.getElementById('s-role').value        = CFG.role || 'employee';
     updateUserDisplay();
     if (CFG.sheetId && CFG.credentials) updateConnStatus(true);
   } catch(e) {}
@@ -1030,7 +1180,7 @@ async function getAccessToken() {
 
   const cred = CFG.credentials;
   const now = Math.floor(Date.now() / 1000);
-  const header = btoa(JSON.stringify({alg:'RS256',typ:'JWT'}));
+  const header  = btoa(JSON.stringify({alg:'RS256',typ:'JWT'}));
   const payload = btoa(JSON.stringify({
     iss: cred.client_email,
     scope: 'https://www.googleapis.com/auth/spreadsheets',
@@ -1039,12 +1189,12 @@ async function getAccessToken() {
     iat: now
   }));
 
-  const sigInput = `${header}.${payload}`;
+  const sigInput  = `${header}.${payload}`;
   const privateKey = await importPrivateKey(cred.private_key);
   const sig = await crypto.subtle.sign({name:'RSASSA-PKCS1-v1_5'}, privateKey, new TextEncoder().encode(sigInput));
   const jwt = `${sigInput}.${btoa(String.fromCharCode(...new Uint8Array(sig)))}`;
 
-  const res = await fetch('https://oauth2.googleapis.com/token', {
+  const res  = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: {'Content-Type':'application/x-www-form-urlencoded'},
     body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
@@ -1059,22 +1209,22 @@ async function getAccessToken() {
 
 async function importPrivateKey(pem) {
   const pemContents = pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g, '');
-  const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+  const binaryDer   = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
   return crypto.subtle.importKey('pkcs8', binaryDer.buffer, {name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}, false, ['sign']);
 }
 
 async function sheetsGet(range) {
   const token = await getAccessToken();
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName + '!' + range)}`;
-  const res = await fetch(url, {headers: {Authorization: `Bearer ${token}`}});
+  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName + '!' + range)}`;
+  const res   = await fetch(url, {headers: {Authorization: `Bearer ${token}`}});
   if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
   return res.json();
 }
 
 async function sheetsAppend(values) {
   const token = await getAccessToken();
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
-  const res = await fetch(url, {
+  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
+  const res   = await fetch(url, {
     method: 'POST',
     headers: {Authorization: `Bearer ${token}`, 'Content-Type':'application/json'},
     body: JSON.stringify({values})
@@ -1085,8 +1235,8 @@ async function sheetsAppend(values) {
 
 async function sheetsUpdate(range, values) {
   const token = await getAccessToken();
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName + '!' + range)}?valueInputOption=RAW`;
-  const res = await fetch(url, {
+  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values/${encodeURIComponent(CFG.sheetName + '!' + range)}?valueInputOption=RAW`;
+  const res   = await fetch(url, {
     method: 'PUT',
     headers: {Authorization: `Bearer ${token}`, 'Content-Type':'application/json'},
     body: JSON.stringify({values})
@@ -1140,22 +1290,22 @@ async function fetchLogs() {
   if (!data.values) return [];
   return data.values.map((r, i) => ({
     rowIndex: i + 2,
-    id: r[0]||'',
+    id:       r[0]||'',
     employee: r[1]||'',
-    dept: r[2]||'',
-    date: r[3]||'',
-    title: r[4]||'',
-    type: r[5]||'',
-    desc: r[6]||'',
-    hours: parseFloat(r[7])||0,
+    dept:     r[2]||'',
+    date:     r[3]||'',
+    title:    r[4]||'',
+    type:     r[5]||'',
+    desc:     r[6]||'',
+    hours:    parseFloat(r[7])||0,
     progress: parseInt(r[8])||0,
     priority: r[9]||'عادية',
-    project: r[10]||'',
-    status: r[11]||'draft',
-    sentAt: r[12]||'',
+    project:  r[10]||'',
+    status:   r[11]||'draft',
+    sentAt:   r[12]||'',
     approvedAt: r[13]||'',
     managerNote: r[14]||'',
-    notes: r[15]||''
+    notes:    r[15]||''
   }));
 }
 
@@ -1164,8 +1314,8 @@ async function fetchLogs() {
 // ══════════════════════════════════════════
 async function submitLog(status) {
   const title = document.getElementById('f-title').value.trim();
-  const date = document.getElementById('f-date').value;
-  const type = document.getElementById('f-type').value;
+  const date  = document.getElementById('f-date').value;
+  const type  = document.getElementById('f-type').value;
   const hours = document.getElementById('f-hours').value;
 
   if (!title) { toast('❌ عنوان العمل مطلوب', true); return; }
@@ -1177,7 +1327,7 @@ async function submitLog(status) {
 
   showLoading('جارٍ الحفظ في Google Sheets...');
   try {
-    const id = 'WL-' + Date.now();
+    const id  = 'WL-' + Date.now();
     const now = new Date().toISOString().replace('T',' ').slice(0,19);
     const row = [
       id,
@@ -1207,11 +1357,11 @@ async function submitLog(status) {
 
 function clearForm() {
   ['f-title','f-desc','f-project','f-notes'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-type').value = '';
-  document.getElementById('f-hours').value = '1';
+  document.getElementById('f-type').value     = '';
+  document.getElementById('f-hours').value    = '1';
   document.getElementById('f-progress').value = '100';
   document.getElementById('f-priority').value = 'عادية';
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value     = new Date().toISOString().split('T')[0];
 }
 
 // ══════════════════════════════════════════
@@ -1230,12 +1380,12 @@ async function loadLogs() {
 }
 
 function renderLogs(logs) {
-  const month = document.getElementById('filter-month').value;
+  const month       = document.getElementById('filter-month').value;
   const statusFilter = document.getElementById('filter-status').value;
 
   let filtered = logs.filter(l => {
-    const myLogs = !CFG.username || l.employee === CFG.username || CFG.role === 'admin' || CFG.role === 'manager';
-    const monthMatch = !month || l.date.startsWith(month);
+    const myLogs     = !CFG.username || l.employee === CFG.username || CFG.role === 'admin' || CFG.role === 'manager';
+    const monthMatch  = !month || l.date.startsWith(month);
     const statusMatch = !statusFilter || l.status === statusFilter;
     return myLogs && monthMatch && statusMatch;
   });
@@ -1282,16 +1432,16 @@ async function loadDashboard() {
       ? LOGS
       : LOGS.filter(l => l.employee === CFG.username);
 
-    document.getElementById('stat-total').textContent = myLogs.length;
-    document.getElementById('stat-pending').textContent = myLogs.filter(l => l.status === 'pending').length;
+    document.getElementById('stat-total').textContent    = myLogs.length;
+    document.getElementById('stat-pending').textContent  = myLogs.filter(l => l.status === 'pending').length;
     document.getElementById('stat-approved').textContent = myLogs.filter(l => l.status === 'approved').length;
-    document.getElementById('stat-hours').textContent = myLogs.reduce((s,l) => s+l.hours, 0).toFixed(1);
+    document.getElementById('stat-hours').textContent    = myLogs.reduce((s,l) => s+l.hours, 0).toFixed(1);
 
     const pendingCount = LOGS.filter(l => l.status === 'pending').length;
-    document.getElementById('pending-badge').textContent = pendingCount;
+    document.getElementById('pending-badge').textContent    = pendingCount;
     document.getElementById('pending-badge').style.display = pendingCount ? '' : 'none';
 
-    const recent = [...myLogs].sort((a,b) => b.date.localeCompare(a.date)).slice(0,5);
+    const recent   = [...myLogs].sort((a,b) => b.date.localeCompare(a.date)).slice(0,5);
     const recentEl = document.getElementById('dashboard-recent');
     if (!recent.length) {
       recentEl.innerHTML = '<div class="empty-state"><i class="ti ti-inbox"></i><p>لا توجد سجلات بعد</p></div>';
@@ -1310,7 +1460,7 @@ async function loadDashboard() {
     const typeCount = {};
     myLogs.forEach(l => { typeCount[l.type] = (typeCount[l.type]||0) + 1; });
     const sorted = Object.entries(typeCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const max = sorted[0]?.[1] || 1;
+    const max    = sorted[0]?.[1] || 1;
     const colors = ['#1a56db','#60a5fa','#0f6e56','#854f0b','#7c3aed'];
     document.getElementById('dashboard-chart').innerHTML = sorted.length
       ? sorted.map(([type,cnt],i) => `
@@ -1334,7 +1484,7 @@ async function loadReview() {
   showLoading('جارٍ تحميل الأعمال...');
   try {
     LOGS = await fetchLogs();
-    const pending = LOGS.filter(l => l.status === 'pending');
+    const pending   = LOGS.filter(l => l.status === 'pending');
     const container = document.getElementById('review-list');
     if (!pending.length) {
       container.innerHTML = '<div class="empty-state" style="margin-top:30px;"><i class="ti ti-check-circle"></i><p>لا توجد أعمال بانتظار الاعتماد</p></div>';
@@ -1397,7 +1547,7 @@ async function returnLog(rowIdx) {
 }
 
 // ══════════════════════════════════════════
-// VIEW LOG MODAL
+// VIEW / EDIT LOG MODAL
 // ══════════════════════════════════════════
 function viewLog(rowIdx) {
   const l = LOGS.find(x => x.rowIndex === rowIdx);
@@ -1432,15 +1582,15 @@ function editLog(rowIdx) {
   if (!l) return;
   nav('add');
   setTimeout(() => {
-    document.getElementById('f-date').value = l.date;
-    document.getElementById('f-type').value = l.type;
-    document.getElementById('f-title').value = l.title;
-    document.getElementById('f-desc').value = l.desc;
-    document.getElementById('f-hours').value = l.hours;
+    document.getElementById('f-date').value     = l.date;
+    document.getElementById('f-type').value     = l.type;
+    document.getElementById('f-title').value    = l.title;
+    document.getElementById('f-desc').value     = l.desc;
+    document.getElementById('f-hours').value    = l.hours;
     document.getElementById('f-progress').value = l.progress;
     document.getElementById('f-priority').value = l.priority;
-    document.getElementById('f-project').value = l.project;
-    document.getElementById('f-notes').value = l.notes;
+    document.getElementById('f-project').value  = l.project;
+    document.getElementById('f-notes').value    = l.notes;
     toast('يمكنك الآن تعديل السجل وإعادة إرساله');
   }, 100);
 }
@@ -1451,23 +1601,23 @@ function editLog(rowIdx) {
 async function generateReport() {
   showLoading('جارٍ إنشاء التقرير...');
   try {
-    const all = await fetchLogs();
-    const from = document.getElementById('r-from').value;
-    const to = document.getElementById('r-to').value;
-    const emp = document.getElementById('r-employee').value.trim().toLowerCase();
-    const type = document.getElementById('r-type').value;
+    const all    = await fetchLogs();
+    const from   = document.getElementById('r-from').value;
+    const to     = document.getElementById('r-to').value;
+    const emp    = document.getElementById('r-employee').value.trim().toLowerCase();
+    const type   = document.getElementById('r-type').value;
     const status = document.getElementById('r-status').value;
 
     const filtered = all.filter(l =>
-      (!from || l.date >= from) &&
-      (!to   || l.date <= to) &&
-      (!emp  || l.employee.toLowerCase().includes(emp)) &&
-      (!type || l.type === type) &&
+      (!from   || l.date >= from) &&
+      (!to     || l.date <= to) &&
+      (!emp    || l.employee.toLowerCase().includes(emp)) &&
+      (!type   || l.type === type) &&
       (!status || l.status === status)
     );
 
     const totalHours = filtered.reduce((s,l)=>s+l.hours,0).toFixed(1);
-    const approved = filtered.filter(l=>l.status==='approved').length;
+    const approved   = filtered.filter(l=>l.status==='approved').length;
 
     document.getElementById('report-result').innerHTML = `
       <div class="stats-grid" style="margin-bottom:14px;">
@@ -1499,13 +1649,8 @@ async function generateReport() {
   hideLoading();
 }
 
-function exportExcelReport() {
-  exportExcel();
-}
-
-function printReport() {
-  window.print();
-}
+function exportExcelReport() { exportExcel(); }
+function printReport() { window.print(); }
 
 // ══════════════════════════════════════════
 // USERS
@@ -1518,7 +1663,7 @@ async function loadUsers() {
   }
   showLoading('جارٍ تحميل المستخدمين...');
   try {
-    const data = await sheetsGet('R1:W200');
+    const data  = await sheetsGet('R1:W200');
     const users = data.values ? data.values.filter(r=>r[0]) : [];
     document.getElementById('users-count').textContent = `إجمالي المستخدمين: ${users.length}`;
     if (!users.length) {
@@ -1582,13 +1727,13 @@ async function addUser() {
 // EXPORT
 // ══════════════════════════════════════════
 function exportExcel() {
-  const data = LOGS.length ? LOGS : [];
+  const data   = LOGS.length ? LOGS : [];
   const header = 'ID\tالموظف\tالدائرة\tالتاريخ\tالعنوان\tالنوع\tالوصف\tالساعات\tالإنجاز%\tالأولوية\tالمشروع\tالحالة\tتاريخ_الإرسال\tتاريخ_الاعتماد\tملاحظات_المدير\n';
-  const rows = data.map(l => `${l.id}\t${l.employee}\t${l.dept}\t${l.date}\t${l.title}\t${l.type}\t${l.desc}\t${l.hours}\t${l.progress}\t${l.priority}\t${l.project}\t${l.status}\t${l.sentAt}\t${l.approvedAt}\t${l.managerNote}`).join('\n');
-  const blob = new Blob(['\uFEFF' + header + rows], {type:'application/vnd.ms-excel;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `work-logs-${new Date().toISOString().split('T')[0]}.xls`;
+  const rows   = data.map(l => `${l.id}\t${l.employee}\t${l.dept}\t${l.date}\t${l.title}\t${l.type}\t${l.desc}\t${l.hours}\t${l.progress}\t${l.priority}\t${l.project}\t${l.status}\t${l.sentAt}\t${l.approvedAt}\t${l.managerNote}`).join('\n');
+  const blob   = new Blob(['\uFEFF' + header + rows], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const a      = document.createElement('a');
+  a.href       = URL.createObjectURL(blob);
+  a.download   = `work-logs-${new Date().toISOString().split('T')[0]}.xls`;
   a.click();
   toast('✓ تم تصدير الملف');
 }
@@ -1598,10 +1743,10 @@ function exportExcel() {
 // ══════════════════════════════════════════
 function statusBadge(s) {
   const map = {
-    draft:    ['badge-gray','مسودة','ti-pencil'],
-    pending:  ['badge-warning','بانتظار الاعتماد','ti-clock'],
-    approved: ['badge-success','معتمد','ti-check'],
-    returned: ['badge-danger','أُعيد للتعديل','ti-arrow-back-up']
+    draft:    ['badge-gray',   'مسودة',            'ti-pencil'],
+    pending:  ['badge-warning','بانتظار الاعتماد', 'ti-clock'],
+    approved: ['badge-success','معتمد',            'ti-check'],
+    returned: ['badge-danger', 'أُعيد للتعديل',   'ti-arrow-back-up']
   };
   const [cls, label, icon] = map[s] || ['badge-gray', s, 'ti-circle'];
   return `<span class="badge ${cls}"><i class="ti ${icon}" style="font-size:11px;"></i> ${label}</span>`;
@@ -1612,9 +1757,9 @@ function esc(s) {
 }
 
 function toast(msg, isError) {
-  const el = document.getElementById('toast');
+  const el   = document.getElementById('toast');
   const icon = el.querySelector('i');
-  icon.className = isError ? 'ti ti-alert-circle' : 'ti ti-check-circle';
+  icon.className  = isError ? 'ti ti-alert-circle' : 'ti ti-check-circle';
   icon.style.color = isError ? '#f87171' : '#4ade80';
   document.getElementById('toast-msg').textContent = msg;
   el.classList.add('show');
@@ -1638,15 +1783,6 @@ function openModal(title, body) {
 function closeModal(e) {
   if (!e || e.target === document.getElementById('modal-bg')) {
     document.getElementById('modal-bg').classList.remove('show');
-  }
-}
-
-function logout() {
-  if (confirm('هل تريد تسجيل الخروج؟')) {
-   localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userRole');
-    toast('تم تسجيل الخروج');
   }
 }
 </script>
